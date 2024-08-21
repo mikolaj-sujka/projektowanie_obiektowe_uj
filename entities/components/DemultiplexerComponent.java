@@ -1,5 +1,6 @@
 package entities.components;
 
+import edu.uj.po.simulation.interfaces.PinState;
 import entities.Component;
 import entities.Pin;
 
@@ -18,7 +19,18 @@ public class DemultiplexerComponent extends Component {
 
     @Override
     public void performLogic() {
-        // Implementacja logiki demultipleksera 3-to-8
-        // np. 000 -> Aktywuje wyjście 1, 001 -> Aktywuje wyjście 2 itd.
+        // Odczytaj wartość selektora (3-bitowy kod)
+        int selectorValue = 0;
+        if (pins.get(1).getState() == PinState.HIGH) selectorValue |= 1;
+        if (pins.get(2).getState() == PinState.HIGH) selectorValue |= 2;
+        if (pins.get(3).getState() == PinState.HIGH) selectorValue |= 4;
+
+        // Wyłącz wszystkie wyjścia
+        for (int i = 4; i <= 11; i++) {
+            pins.get(i).setState(PinState.LOW);
+        }
+
+        // Ustaw wybrane wyjście na HIGH na podstawie wartości selektora
+        pins.get(4 + selectorValue).setState(PinState.HIGH);
     }
 }

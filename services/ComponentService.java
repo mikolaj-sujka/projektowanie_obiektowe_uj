@@ -14,13 +14,19 @@ import java.util.HashMap;
 public class ComponentService {
     ComponentFactory componentFactory = new ComponentFactory();
     PinHeaderFactory pinHeaderFactory = new PinHeaderFactory();
-    HashMap<Integer, Component> components = new HashMap<Integer, Component>();
+    HashMap<Integer, Component> components = new HashMap<>();
+    private SimulationService simulationService;
+
+    public ComponentService(SimulationService simulationService) {
+        this.simulationService = simulationService;
+    }
 
     public int createChip(int code) throws UnknownChip {
-        Component component = componentFactory.createChip(code); // Pobieramy ID od fabryki
+        Component component = componentFactory.createChip(code); // Pobieramy ID
         int componentId = getComponentId(component);
         components.put(componentId, component); // Przechowujemy komponent z jego unikalnym ID
-        return componentId; // Zwracamy identyfikator
+        simulationService.addComponent(component);
+        return componentId;
     }
 
     public int createOutputPinHeader(int size) {

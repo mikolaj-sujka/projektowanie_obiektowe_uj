@@ -3,7 +3,9 @@ package entities;
 import edu.uj.po.simulation.interfaces.UnknownPin;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class Component {
     protected int id; // Unikalny identyfikator komponentu
@@ -28,6 +30,10 @@ public abstract class Component {
             throw new UnknownPin(id, pinNumber);
         }
         return pin;
+    }
+
+    public Set<Pin> getPins() {
+        return new HashSet<>(pins.values()); // Convert the values of the map to a Set and return it
     }
 
     public void addPin(int pinNumber, Pin pin) {

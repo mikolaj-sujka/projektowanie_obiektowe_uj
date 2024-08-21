@@ -1,5 +1,6 @@
 package entities.components;
 
+import edu.uj.po.simulation.interfaces.PinState;
 import entities.Component;
 import entities.Pin;
 
@@ -18,8 +19,20 @@ public class BcdDecoderComponent extends Component {
 
     @Override
     public void performLogic() {
-        // Implementacja dekodowania BCD na 10 wyjść
-        // np. 0001 (BCD) -> Wyjście 1 aktywne
-        // Można użyć switch-case lub if-else
+        // Wyłącz wszystkie wyjścia
+        for (int i = 5; i <= 14; i++) {
+            pins.get(i).setState(PinState.LOW);
+        }
+
+        // Odczytaj wartość wejść (4-bitowy kod BCD)
+        int bcdValue = 0;
+        if (pins.get(1).getState() == PinState.HIGH) bcdValue |= 1;
+        if (pins.get(2).getState() == PinState.HIGH) bcdValue |= 2;
+        if (pins.get(3).getState() == PinState.HIGH) bcdValue |= 4;
+        if (pins.get(4).getState() == PinState.HIGH) bcdValue |= 8;
+
+        if (bcdValue <= 9) {
+            pins.get(5 + bcdValue).setState(PinState.HIGH);
+        }
     }
 }

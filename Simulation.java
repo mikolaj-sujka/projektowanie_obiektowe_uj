@@ -13,8 +13,8 @@ public class Simulation implements UserInterface {
     private OptimizationService optimizationService;
 
     public Simulation() {
-        service = new ComponentService();
         simulationService = new SimulationService();
+        service = new ComponentService(simulationService);
         optimizationService = new OptimizationService();
     }
     @Override

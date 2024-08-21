@@ -1,5 +1,6 @@
 package entities.components;
 
+import edu.uj.po.simulation.interfaces.PinState;
 import entities.Component;
 import entities.Pin;
 
@@ -16,7 +17,14 @@ public class MultiplexerComponent extends Component {
 
     @Override
     public void performLogic() {
-        // Implementacja logiki multipleksera 8-to-1
-        // np. Sygnał na wyjściu zależy od stanu wejść selektora
+        // Odczytaj wartość selektora (3-bitowy kod, zakładając 8-to-1)
+        int selectorValue = 0;
+        if (pins.get(1).getState() == PinState.HIGH) selectorValue |= 1;
+        if (pins.get(2).getState() == PinState.HIGH) selectorValue |= 2;
+        if (pins.get(3).getState() == PinState.HIGH) selectorValue |= 4;
+
+        // Ustaw wyjście na stan wybranego wejścia
+        Pin selectedInput = pins.get(selectorValue + 1);
+        pins.get(9).setState(selectedInput.getState());
     }
 }

@@ -25,8 +25,4 @@ public class PinHeaderFactory implements IPinHeaderFactory{
         components.put(componentId, pinHeader);
         return componentId;
     }
-
-    public Component getComponent(int componentId) {
-        return components.get(componentId);
-    }
 }
