@@ -15,7 +15,7 @@ public class ComponentService {
     ComponentFactory componentFactory = new ComponentFactory();
     PinHeaderFactory pinHeaderFactory = new PinHeaderFactory();
     HashMap<Integer, Component> components = new HashMap<>();
-    private SimulationService simulationService;
+    private final SimulationService simulationService;
 
     public ComponentService(SimulationService simulationService) {
         this.simulationService = simulationService;
@@ -31,15 +31,13 @@ public class ComponentService {
 
     public int createOutputPinHeader(int size) {
         int componentId = pinHeaderFactory.createOutputPinHeader(size);
-        Component component = components.get(componentId);
-        components.put(componentId, component);
+        components.compute(componentId, (_, component) -> component);
         return componentId;
     }
 
     public int createInputPinHeader(int size) {
         int componentId = pinHeaderFactory.createInputPinHeader(size);
-        Component component = components.get(componentId);
-        components.put(componentId, component);
+        components.compute(componentId, (_, component) -> component);
         return componentId;
     }
 

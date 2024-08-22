@@ -8,14 +8,14 @@ import java.util.Set;
 
 public class Simulation implements UserInterface {
 
-    private ComponentService service;
-    private SimulationService simulationService;
-    private OptimizationService optimizationService;
+    private final ComponentService service;
+    private final SimulationService simulationService;
+    private final OptimizationService optimizationService;
 
     public Simulation() {
         simulationService = new SimulationService();
         service = new ComponentService(simulationService);
-        optimizationService = new OptimizationService();
+        optimizationService = new OptimizationService(simulationService);
     }
     @Override
     public int createChip(int code) throws UnknownChip {
