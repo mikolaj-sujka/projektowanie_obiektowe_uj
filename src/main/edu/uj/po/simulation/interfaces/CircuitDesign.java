@@ -1,9 +1,4 @@
-package edu.uj.po.simulation.interfaces;
-
-import src.main.edu.uj.po.simulation.interfaces.ShortCircuitException;
-import src.main.edu.uj.po.simulation.interfaces.UnknownChip;
-import src.main.edu.uj.po.simulation.interfaces.UnknownComponent;
-import src.main.edu.uj.po.simulation.interfaces.UnknownPin;
+package src.main.edu.uj.po.simulation.interfaces;
 
 public interface CircuitDesign {
 	/**
