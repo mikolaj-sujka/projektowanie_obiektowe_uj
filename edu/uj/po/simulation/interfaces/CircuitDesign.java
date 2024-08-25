@@ -1,5 +1,10 @@
 package edu.uj.po.simulation.interfaces;
 
+import src.main.edu.uj.po.simulation.interfaces.ShortCircuitException;
+import src.main.edu.uj.po.simulation.interfaces.UnknownChip;
+import src.main.edu.uj.po.simulation.interfaces.UnknownComponent;
+import src.main.edu.uj.po.simulation.interfaces.UnknownPin;
+
 public interface CircuitDesign {
 	/**
 	 * Metoda zleca utworzenie układu scalonego o podanym kodzie numerycznym.
