@@ -22,8 +22,11 @@ public class NotGateComponent extends Component {
             Pin output = pins.get(pins.size() / 2 + i);
             if (input.getState() == PinState.HIGH) {
                 output.setState(PinState.LOW);
-            } else {
+            } else if (input.getState() == PinState.LOW) {
                 output.setState(PinState.HIGH);
+            } else {
+                // Jeśli stan wejścia jest UNKNOWN, wyjście też powinno być UNKNOWN
+                output.setState(PinState.UNKNOWN);
             }
         }
     }

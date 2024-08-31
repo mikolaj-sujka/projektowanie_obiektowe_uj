@@ -63,10 +63,26 @@ public class ComponentService {
             throw new UnknownPin(component2Id, pin2);
         }
 
+        // Sprawdzenie połączeń czerwonych (złe połączenia)
         if (pin1Obj.isOutput() && pin2Obj.isOutput()) {
             throw new ShortCircuitException();
         }
 
+        // Sprawdzenie, czy pin1 jest już połączony z innym pinem (zielone połączenia)
+        if (pin1Obj.isConnected() && !pin1Obj.isOutput() && pin2Obj.isOutput()) {
+            if (pin1Obj.getConnectedPin().isOutput()) {
+                throw new ShortCircuitException();
+            }
+        }
+
+        // Sprawdzenie, czy pin2 jest połączony i czy jest wejściem oraz pin1 jest wyjściem
+        if (pin2Obj.isConnected() && !pin2Obj.isOutput() && pin1Obj.isOutput()) {
+            if (pin2Obj.getConnectedPin().isOutput()) {
+                throw new ShortCircuitException();
+            }
+        }
+
+        // Połączenie pinów (tylko jeśli poprzednie warunki nie zostały spełnione)
         pin1Obj.connect(pin2Obj);
     }
 

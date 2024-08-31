@@ -20,16 +20,13 @@ public class SimulationService
     private final Map<Integer, Component> components = new HashMap<>();
 
     public void stationaryState(Set<ComponentPinState> states) throws UnknownStateException {
-        // Iterujemy przez dostarczone stany pinów
         for (ComponentPinState state : states) {
-            // Pobieramy komponent na podstawie jego ID
             Component component = getComponentById(state.componentId());
 
             if (component == null) {
                 throw new UnknownStateException(state);
             }
 
-            // Pobieramy pin z komponentu na podstawie jego ID
             Pin pin;
             try {
                 pin = component.getPin(state.pinId());
@@ -41,33 +38,24 @@ public class SimulationService
                 throw new UnknownStateException(state);
             }
 
-            // Sprawdzamy, czy stan jest UNKNOWN - jeśli tak, zgłaszamy wyjątek
             if (state.state() == PinState.UNKNOWN) {
                 throw new UnknownStateException(state);
             }
 
-            // Ustawiamy stan pinu
             pin.setState(state.state());
         }
 
-        // Po ustawieniu stanów, iterujemy przez wszystkie komponenty, aby sprawdzić, czy są w stanie stacjonarnym
         for (Component component : components.values()) {
-            for (Pin pin : component.getPins()) {
-                // Jeśli którykolwiek pin pozostaje w stanie UNKNOWN, zgłaszamy wyjątek
-                if (pin.getState() == PinState.UNKNOWN) {
-                    ComponentPinState unknownState = new ComponentPinState(component.getId(), pin.getPinNumber(), pin.getState());
-                    throw new UnknownStateException(unknownState);
-                }
-            }
-
-            // Wykonujemy logikę komponentu, aby sprawdzić jego stabilność
+            // Wykonanie logiki komponentu
             component.performLogic();
 
-            // Sprawdzamy ponownie, czy po wykonaniu logiki nie ma już stanów UNKNOWN
             for (Pin pin : component.getPins()) {
-                if (pin.getState() == PinState.UNKNOWN) {
+                // Sprawdzamy stan tylko tych pinów, które są połączone z innymi
+                if (pin.isConnected() && pin.getState() == PinState.UNKNOWN) {
                     ComponentPinState unknownState = new ComponentPinState(component.getId(), pin.getPinNumber(), pin.getState());
-                    throw new UnknownStateException(unknownState);
+                    if (!isTemporaryUnknownState(component.getId(), unknownState.pinId())) {
+                        throw new UnknownStateException(unknownState);
+                    }
                 }
             }
         }
@@ -141,5 +129,25 @@ public class SimulationService
 
     public void addComponent(Component component) {
         components.put(component.getId(), component); // Add the component to the map using its ID as the key
+    }
+
+    private boolean isTemporaryUnknownState(int componentId, int pinId) {
+        // Implementacja logiki sprawdzającej, czy stan UNKNOWN dla tego pinu jest tymczasowy
+        // Na przykład, jeśli ten pin jest połączony z innym pinem, którego stan może się zmienić
+        // w wyniku kolejnych kroków symulacji, możemy uznać stan UNKNOWN za tymczasowy.
+
+        // Przykładowa logika: sprawdzamy, czy pin jest połączony z innym pinem, który może mieć zmienny stan
+        Component component = getComponentById(componentId);
+        Set<Pin> pins = component.getPins();
+        Pin pin = pins.stream().filter(p -> p.getPinNumber() == pinId).findFirst().get();
+
+        if (pin.isConnected()) {
+            Pin connectedPin = pin.getConnectedPin();
+            // Zakładamy, że jeśli stan połączonego pinu jest wciąż nieustalony (UNKNOWN), to jest to tymczasowy stan
+            return connectedPin.getState() == PinState.UNKNOWN;
+        }
+
+        // Jeśli pin nie jest połączony lub stan jest ostateczny, zwracamy false
+        return false;
     }
 }

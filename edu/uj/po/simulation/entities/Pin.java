@@ -8,11 +8,13 @@ public class Pin {
     private PinState state;        // Stan pinu (HIGH, LOW, UNKNOWN)
     private final boolean isOutput;      // Czy pin jest wyjściowy
     private Pin connectedPin;      // Pin, do którego ten pin jest podłączony (jeśli istnieje)
+    private boolean isUpdatingState; // Flaga zapobiegająca rekurencji
 
     public Pin(int pinNumber, boolean isOutput) {
         this.pinNumber = pinNumber;
         this.isOutput = isOutput;
         this.state = PinState.UNKNOWN; // Domyślny stan to UNKNOWN
+        this.isUpdatingState = false;  // Flaga początkowa dla unikania rekurencji
     }
 
     // Pobranie numeru pinu
@@ -26,11 +28,20 @@ public class Pin {
     }
 
     // Ustawienie stanu pinu
-    public void setState(PinState state) {
-        this.state = state;
-        // Jeśli pin jest połączony z innym pinem, ustaw stan tego pinu
-        if (connectedPin != null) {
-            connectedPin.setState(state);
+    public void setState(PinState newState) {
+        // Sprawdź, czy pin nie jest w trakcie aktualizacji, aby uniknąć rekurencji
+        if (!isUpdatingState) {
+            isUpdatingState = true;  // Ustaw flagę na true, aby zapobiec rekurencji
+
+            System.out.println("Pin " + pinNumber + " setting state to " + newState);
+            this.state = newState;
+
+            // Jeśli pin jest połączony z innym pinem i nie jest w trakcie aktualizacji, ustaw stan tego pinu
+            if (connectedPin != null && !connectedPin.isUpdatingState) {
+                connectedPin.setState(newState);
+            }
+
+            isUpdatingState = false;  // Ustaw flagę z powrotem na false po zakończeniu
         }
     }
 
