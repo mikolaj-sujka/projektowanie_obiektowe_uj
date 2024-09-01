@@ -18,11 +18,16 @@ public class NandGateComponent extends Component {
 
     @Override
     public void performLogic() {
-        for (int i = 1; i <= pins.size() / 3; i++) {
-            Pin input1 = pins.get(i * 2 - 1);
-            Pin input2 = pins.get(i * 2);
-            Pin output = pins.get(pins.size() / 3 + i);
-            if (input1.getState() == PinState.HIGH && input2.getState() == PinState.HIGH) {
+        int numberOfGates = pins.size() / 3;
+        for (int i = 0; i < numberOfGates; i++) {
+            Pin input1 = pins.get(i * 2 + 1); // Poprawne obliczenie indeksu dla wejścia 1
+            Pin input2 = pins.get(i * 2 + 2); // Poprawne obliczenie indeksu dla wejścia 2
+            Pin output = pins.get(numberOfGates * 2 + 1 + i); // Poprawny indeks dla wyjścia
+
+            // Sprawdzenie, czy któryś z wejściowych pinów ma stan UNKNOWN
+            if (input1.getState() == PinState.UNKNOWN || input2.getState() == PinState.UNKNOWN) {
+                output.setState(PinState.UNKNOWN);
+            } else if (input1.getState() == PinState.HIGH && input2.getState() == PinState.HIGH) {
                 output.setState(PinState.LOW);
             } else {
                 output.setState(PinState.HIGH);

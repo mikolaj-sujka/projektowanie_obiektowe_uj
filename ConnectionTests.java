@@ -4,7 +4,6 @@ import org.junit.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-
 public class ConnectionTests {
 
     @Test(expected = ShortCircuitException.class)
@@ -125,6 +124,33 @@ public class ConnectionTests {
         initialState.add(new ComponentPinState(u4, 2, PinState.LOW));
 
         // sprawdzenie stationaryState
+        simulation.stationaryState(initialState);
+    }
+
+    @Test
+    public void testCircuitBasedOnImage() throws UnknownStateException, UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip {
+        Simulation simulation = new Simulation();
+
+        // Tworzenie komponentów na podstawie obrazka
+        int andGateChip = simulation.createChip(7408); // U01 - AND gate (4 bramki AND)
+        int notGateChip = simulation.createChip(7404); // U02 - NOT gate (6 bramek NOT)
+
+        // Połączenia na podstawie obrazka
+        simulation.connect(andGateChip, 1, andGateChip, 2);  // We1 -> AND gate 1 (U01 pin 1)
+        simulation.connect(andGateChip, 4, andGateChip, 5);  // We2 -> AND gate 1 (U01 pin 2)
+        simulation.connect(andGateChip, 6, notGateChip, 1);  // Wyjście z AND gate (U01 pin 3) -> We3 NOT gate (U02 pin 1)
+
+        simulation.connect(notGateChip, 2, andGateChip, 10); // NOT gate (U02 pin 2) -> AND gate 2 (U01 pin 5)
+        simulation.connect(notGateChip, 3, notGateChip, 4);  // NOT gate 2 (U02 pin 4) -> NOT gate 3 (U02 pin 5)
+        simulation.connect(notGateChip, 5, notGateChip, 6);  // NOT gate 3 (U02 pin 6) -> Wyjście (U02 pin 12)
+
+        // Ustawienie początkowych stanów wejściowych
+        Set<ComponentPinState> initialState = new HashSet<>();
+        initialState.add(new ComponentPinState(andGateChip, 1, PinState.HIGH)); // We1 = HIGH
+        initialState.add(new ComponentPinState(andGateChip, 4, PinState.LOW));  // We2 = LOW
+        initialState.add(new ComponentPinState(andGateChip, 6, PinState.HIGH)); // We4 = HIGH
+
+        // Przeprowadzenie symulacji stanu stacjonarnego
         simulation.stationaryState(initialState);
     }
 }
