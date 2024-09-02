@@ -2,6 +2,7 @@ package edu.uj.po.simulation.entities;
 
 
 import edu.uj.po.simulation.interfaces.PinState;
+import edu.uj.po.simulation.interfaces.ShortCircuitException;
 import edu.uj.po.simulation.interfaces.UnknownPin;
 import edu.uj.po.simulation.observers.IPinStateObserver;
 
@@ -43,6 +44,10 @@ public abstract class Component {
 
     public abstract void performLogic(); // Metoda abstrakcyjna do wykonania logiki specyficznej dla komponentu
 
+    public void validateConnection(Pin pin1, Pin pin2, int component1, int component2) throws ShortCircuitException {
+        // Domyślna implementacja, w razie potrzeby można ją nadpisać w podklasach
+    }
+
     public void addObserver(IPinStateObserver observer) {
         observers.add(observer);
     }
@@ -59,5 +64,9 @@ public abstract class Component {
             pin.setState(state);
             notifyObservers(state);
         }
+    }
+
+    public boolean isPowerPin(int pin) {
+        return pin == 14 || pin == 7; // piny 14 i 7 to Vcc i GND
     }
 }

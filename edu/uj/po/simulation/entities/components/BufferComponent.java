@@ -19,7 +19,12 @@ public class BufferComponent extends Component {
         for (int i = 1; i <= pins.size() / 2; i++) {
             Pin input = pins.get(i);
             Pin output = pins.get(pins.size() / 2 + i);
-            output.setState(input.getState()); // Przekazuje stan wejścia na wyjście
+
+            if (isPowerPin(input.getPinNumber()) || isPowerPin(output.getPinNumber())) {
+                continue;
+            }
+
+            output.setState(input.getState());
         }
     }
 }

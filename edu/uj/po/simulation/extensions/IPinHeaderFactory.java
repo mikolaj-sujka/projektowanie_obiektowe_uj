@@ -1,6 +1,8 @@
 package edu.uj.po.simulation.extensions;
 
+import edu.uj.po.simulation.entities.Component;
+
 public interface IPinHeaderFactory {
-    int createOutputPinHeader(int size);
-    int createInputPinHeader(int size);
+    Component createOutputPinHeader(int size);
+    Component createInputPinHeader(int size);
 }

@@ -9,34 +9,25 @@ SPK_ADDRESS="149.156.43.64"
 HOST="${LOGIN}@${SPK_ADDRESS}"
 FILE_NAME="simulation.zip"
 
-# Create a zip file with the source code
-echo "Creating zip file..."
+# Create a tarball with the source code
 rm -f $FILE_NAME
 zip -r $FILE_NAME edu Simulation.java
 
 # Check if sshpass is installed
-echo "Checking if sshpass is installed..."
 sshpass_installed=$(which sshpass)
-if [ -z "$sshpass_installed" ];
-then
+if [ -z "$sshpass_installed" ]; then
     echo "sshpass is not installed"
-    sudo apt-get update
     sudo apt-get install -y sshpass
 fi
-
 export SSHPASS=$PASSWORD
+
 REMOTE_PATH="/home/$LOGIN"
 
 # Removing the old tarball if it exists
-echo "Removing old tarball from remote server..."
 sshpass -e ssh $HOST "rm -f ${REMOTE_PATH}/${FILE_NAME}"
 
 # Copy the new tarball to the remote server
-echo "Copying new tarball to remote server..."
 sshpass -e scp ./$FILE_NAME $HOST:$REMOTE_PATH
 
 # Run the client.jar with the tarball on the remote server
-echo "Running client.jar on remote server..."
 sshpass -e ssh $HOST "java -jar /scratch/uforamus/client.jar 172.30.24.15 ${REMOTE_PATH}/${FILE_NAME}"
-
-echo "Script completed."

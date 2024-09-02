@@ -1,7 +1,5 @@
 import edu.uj.po.simulation.interfaces.*;
-import edu.uj.po.simulation.services.ComponentService;
-import edu.uj.po.simulation.services.OptimizationService;
-import edu.uj.po.simulation.services.SimulationService;
+import edu.uj.po.simulation.services.*;
 
 import java.util.Map;
 import java.util.Set;

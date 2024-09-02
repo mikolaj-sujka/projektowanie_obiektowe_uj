@@ -22,6 +22,10 @@ public class AndGateComponent extends Component {
             Pin input2 = pins.get(2 + 3 * i);
             Pin output = pins.get(3 + 3 * i);
 
+            if (isPowerPin(input1.getPinNumber()) || isPowerPin(input2.getPinNumber()) || isPowerPin(output.getPinNumber())) {
+                continue;
+            }
+
             // Upewnij się, że tylko jeśli oba wejścia mają stan HIGH, wyjście ma stan HIGH
             if (input1.getState() == PinState.HIGH && input2.getState() == PinState.HIGH) {
                 output.setState(PinState.HIGH);

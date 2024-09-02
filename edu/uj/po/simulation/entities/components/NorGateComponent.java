@@ -21,6 +21,11 @@ public class NorGateComponent extends Component {
             Pin input1 = pins.get(i * 2 - 1);
             Pin input2 = pins.get(i * 2);
             Pin output = pins.get(pins.size() / 3 + i);
+
+            if (isPowerPin(input1.getPinNumber()) || isPowerPin(input2.getPinNumber()) || isPowerPin(output.getPinNumber())) {
+                continue;
+            }
+
             if (input1.getState() == PinState.LOW && input2.getState() == PinState.LOW) {
                 output.setState(PinState.HIGH);
             } else {

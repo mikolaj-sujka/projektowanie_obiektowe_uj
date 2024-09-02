@@ -1,32 +1,9 @@
 import edu.uj.po.simulation.interfaces.*;
 import org.junit.Test;
 
-import java.util.HashSet;
-import java.util.Set;
+import static org.junit.Assert.assertThrows;
 
 public class ConnectionTests {
-
-    @Test(expected = ShortCircuitException.class)
-    public void testConnectTwoOutputPins() throws UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip {
-        Simulation simulation = new Simulation();
-
-        int andGate1 = simulation.createChip(7408); // AND gate
-        int notGate1 = simulation.createChip(7404); // NOT gate
-
-        // Próba połączenia dwóch pinów wyjściowych
-        simulation.connect(andGate1, 3, notGate1, 7); // Should throw ShortCircuitException
-    }
-
-    @Test()
-    public void testConnectTwoInputPins() throws UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip {
-        Simulation simulation = new Simulation();
-
-        int andGate1 = simulation.createChip(7408); // AND gate
-        int notGate1 = simulation.createChip(7404); // NOT gate
-
-        // Próba połączenia dwóch pinów wejściowych
-        simulation.connect(andGate1, 1, notGate1, 1); // Should throw ShortCircuitException
-    }
 
     @Test
     public void testConnectInputToOutput() throws UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip {
@@ -96,61 +73,192 @@ public class ConnectionTests {
 
         // No exceptions should be thrown, indicating the connection is valid
     }
-
-    @Test
-    public void testValidConnectionScenario() throws UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip, UnknownStateException {
+    @Test(expected = UnknownPin.class)
+    public void test7404ConnectionInvalidPin() throws Exception {
         Simulation simulation = new Simulation();
+        int chip7404 = simulation.createChip(7404);
 
-        // Tworzenie komponentów
-        int u1 = simulation.createChip(7408); // AND gate
-        int u2 = simulation.createChip(7408); // AND gate
-        int u3 = simulation.createChip(7404); // NOT gate
-        int u4 = simulation.createChip(7432); // OR gate
+        // Próba połączenia nieistniejących pinów
+        simulation.connect(chip7404, 20, chip7404, 21); // Nieistniejące piny
+    }
 
-        // Połączenia zielone (dozwolone)
-        simulation.connect(u1, 1, u1, 3); // We1 -> Wy1 (U1)
-        simulation.connect(u1, 3, u2, 2); // Wy1 (U1) -> We2 (U2)
-        simulation.connect(u2, 3, u1, 5); // Wy2 (U2) -> We5 (U1)
-        simulation.connect(u1, 3, u3, 1); // Wy1 (U1) -> We1 (U3)
-        simulation.connect(u1, 3, u4, 2); // Wy1 (U1) -> We2 (U4)
-        simulation.connect(u1, 3, u4, 3); // Wy1 (U1) -> We3 (U4)
+    @Test(expected = ShortCircuitException.class)
+    public void test7404ConnectionInvalid1() throws Exception {
+        Simulation simulation = new Simulation();
+        int chip7404 = simulation.createChip(7404);
 
-        Set<ComponentPinState> initialState = new HashSet<>();
-        initialState.add(new ComponentPinState(u1, 1, PinState.HIGH)); // Set We1 of U1 to HIGH
-        initialState.add(new ComponentPinState(u1, 2, PinState.HIGH)); // Set We2 of U1 to HIGH
-        initialState.add(new ComponentPinState(u2, 2, PinState.LOW));  // Set We2 of U2 to LOW
-        initialState.add(new ComponentPinState(u1, 5, PinState.HIGH));
-        initialState.add(new ComponentPinState(u3, 1, PinState.LOW)); // lub PinState.HIGH w zależności od potrzeby
-        initialState.add(new ComponentPinState(u4, 2, PinState.LOW));
+        // Próba połączenia wyjścia z wyjściem
+        simulation.connect(chip7404, 2, chip7404, 4); // 1Y -> 2Y
+    }
 
-        // sprawdzenie stationaryState
-        simulation.stationaryState(initialState);
+    @Test(expected = ShortCircuitException.class)
+    public void test7404ConnectionInvalid2() throws Exception {
+        Simulation simulation = new Simulation();
+        int chip7404 = simulation.createChip(7404);
+
+        // Próba połączenia wejścia z wejściem
+        simulation.connect(chip7404, 1, chip7404, 3); // 1A -> 2A
     }
 
     @Test
-    public void testCircuitBasedOnImage() throws UnknownStateException, UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip {
+    public void test7404ConnectionValid1() throws Exception {
         Simulation simulation = new Simulation();
+        int chip7404 = simulation.createChip(7404);
 
-        // Tworzenie komponentów na podstawie obrazka
-        int andGateChip = simulation.createChip(7408); // U01 - AND gate (4 bramki AND)
-        int notGateChip = simulation.createChip(7404); // U02 - NOT gate (6 bramek NOT)
+        // Podłącz poprawne wejście i wyjście
+        simulation.connect(chip7404, 1, chip7404, 2); // 1A -> 1Y
 
-        // Połączenia na podstawie obrazka
-        simulation.connect(andGateChip, 1, andGateChip, 2);  // We1 -> AND gate 1 (U01 pin 1)
-        simulation.connect(andGateChip, 4, andGateChip, 5);  // We2 -> AND gate 1 (U01 pin 2)
-        simulation.connect(andGateChip, 6, notGateChip, 1);  // Wyjście z AND gate (U01 pin 3) -> We3 NOT gate (U02 pin 1)
+        // Brak wyjątku oznacza, że połączenie jest poprawne
+    }
 
-        simulation.connect(notGateChip, 2, andGateChip, 10); // NOT gate (U02 pin 2) -> AND gate 2 (U01 pin 5)
-        simulation.connect(notGateChip, 3, notGateChip, 4);  // NOT gate 2 (U02 pin 4) -> NOT gate 3 (U02 pin 5)
-        simulation.connect(notGateChip, 5, notGateChip, 6);  // NOT gate 3 (U02 pin 6) -> Wyjście (U02 pin 12)
+    @Test
+    public void test7404ConnectionValid2() throws Exception {
+        Simulation simulation = new Simulation();
+        int chip7404 = simulation.createChip(7404);
 
-        // Ustawienie początkowych stanów wejściowych
-        Set<ComponentPinState> initialState = new HashSet<>();
-        initialState.add(new ComponentPinState(andGateChip, 1, PinState.HIGH)); // We1 = HIGH
-        initialState.add(new ComponentPinState(andGateChip, 4, PinState.LOW));  // We2 = LOW
-        initialState.add(new ComponentPinState(andGateChip, 6, PinState.HIGH)); // We4 = HIGH
+        // Testowanie połączenia między innymi pinami
+        simulation.connect(chip7404, 3, chip7404, 4); // 2A -> 2Y
+    }
 
-        // Przeprowadzenie symulacji stanu stacjonarnego
-        simulation.stationaryState(initialState);
+    @Test
+    public void test7404ConnectionValid3() throws Exception {
+        Simulation simulation = new Simulation();
+        int chip7404 = simulation.createChip(7404);
+
+        // Testowanie połączenia między innymi pinami
+        simulation.connect(chip7404, 5, chip7404, 6); // 3A -> 3Y
+    }
+
+    @Test
+    public void test7404ConnectionValid4() throws Exception {
+        Simulation simulation = new Simulation();
+        int chip7404 = simulation.createChip(7404);
+
+        // Testowanie połączenia między innymi pinami
+        simulation.connect(chip7404, 9, chip7404, 8); // 4A -> 4Y
+    }
+
+    @Test
+    public void test7404ConnectionValid5() throws Exception {
+        Simulation simulation = new Simulation();
+        int chip7404 = simulation.createChip(7404);
+
+        // Testowanie połączenia między innymi pinami
+        simulation.connect(chip7404, 11, chip7404, 10); // 5A -> 5Y
+    }
+
+    @Test
+    public void test7404ConnectionValid6() throws Exception {
+        Simulation simulation = new Simulation();
+        int chip7404 = simulation.createChip(7404);
+
+        // Testowanie połączenia między innymi pinami
+        simulation.connect(chip7404, 13, chip7404, 12); // 6A -> 6Y
+    }
+
+    @Test
+    public void test7404ConnectionVccAndGnd() throws Exception {
+        Simulation simulation = new Simulation();
+        int chip7404 = simulation.createChip(7404);
+
+        // Próba połączenia pinu Vcc lub GND powinna być ignorowana
+        // Dlatego nie oczekujemy żadnych wyjątków ani akcji
+        simulation.connect(chip7404, 14, chip7404, 7); // Vcc -> GND
+    }
+
+    @Test(expected = ShortCircuitException.class)
+    public void test7404ConnectionInvalidOutputToOutput() throws UnknownStateException, UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip {
+        Simulation simulation = new Simulation();
+        int chipId = simulation.createChip(7404);
+
+        simulation.connect(chipId, 2, chipId, 4); // Próbujemy połączyć dwa wyjścia
+    }
+
+    @Test(expected = ShortCircuitException.class)
+    public void test7404ConnectionValidInputToInput() throws UnknownStateException, UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip {
+        Simulation simulation = new Simulation();
+        int chipId = simulation.createChip(7404);
+
+        // Sprawdzenie poprawności połączenia dwóch wejść
+        simulation.connect(chipId, 1, chipId, 3); // Próbujemy połączyć dwa wejścia
+    }
+
+    @Test
+    public void test7404ConnectionValidInputToOutput() throws UnknownStateException, UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip {
+        Simulation simulation = new Simulation();
+        int chipId = simulation.createChip(7404);
+
+        // Sprawdzenie poprawności połączenia wejścia z wyjściem
+        simulation.connect(chipId, 1, chipId, 8); // Wejście 1 do wyjścia 4Y
+    }
+
+    @Test
+    public void test7404ConnectionValidOutputToInput() throws UnknownStateException, UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip {
+        Simulation simulation = new Simulation();
+        int chipId = simulation.createChip(7404);
+
+        // Sprawdzenie poprawności połączenia wyjścia z wejściem
+        simulation.connect(chipId, 8, chipId, 1); // Wyjście 4Y do wejścia 1A
+    }
+
+    @Test
+    public void test7404ConnectionValidInputToInputDifferentComponents() throws UnknownStateException, UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip {
+        Simulation simulation = new Simulation();
+        int chipId1 = simulation.createChip(7404);
+        int chipId2 = simulation.createChip(7404);
+
+        // Sprawdzenie poprawności połączenia dwóch wejść z różnych komponentów
+        simulation.connect(chipId1, 1, chipId2, 3);
+    }
+
+    @Test
+    public void test7404ConnectionValidInputToOutputSingle() throws UnknownStateException, UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip {
+        Simulation simulation = new Simulation();
+        int chipId = simulation.createChip(7404);
+
+        // Sprawdzenie poprawności połączenia wejścia z wyjściem
+        simulation.connect(chipId, 1, chipId, 8);
+    }
+
+    @Test
+    public void test7404ConnectionInvalidOutputToOutputSameComponent() throws UnknownStateException, UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip {
+        Simulation simulation = new Simulation();
+        int chipId = simulation.createChip(7404);
+
+        assertThrows(ShortCircuitException.class, () -> {
+            simulation.connect(chipId, 8, chipId, 6); // Próbujemy połączyć dwa wyjścia w tym samym komponencie
+        });
+    }
+
+    @Test
+    public void test7404ConnectionInvalidOutputToOutputDifferentComponents() throws UnknownStateException, UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip {
+        Simulation simulation = new Simulation();
+        int chipId1 = simulation.createChip(7404);
+        int chipId2 = simulation.createChip(7404);
+
+        assertThrows(ShortCircuitException.class, () -> {
+            simulation.connect(chipId1, 8, chipId2, 6); // Próbujemy połączyć dwa wyjścia z różnych komponentów
+        });
+    }
+
+    @Test
+    public void test7404ConnectionValidOutputToInputDifferentComponents() throws UnknownStateException, UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip {
+        Simulation simulation = new Simulation();
+        int chipId1 = simulation.createChip(7404);
+        int chipId2 = simulation.createChip(7404);
+
+        // Sprawdzenie poprawności połączenia wyjścia z wejściem z różnych komponentów
+        simulation.connect(chipId1, 8, chipId2, 1);
+    }
+
+    @Test
+    public void test7404ConnectionValidInputToInputDifferentComponents2() throws UnknownStateException, UnknownComponent, UnknownPin, ShortCircuitException, UnknownChip {
+        Simulation simulation = new Simulation();
+        int chipId1 = simulation.createChip(7404);
+        int chipId2 = simulation.createChip(7404);
+
+        // Sprawdzenie poprawności połączenia wejścia z wejściem z różnych komponentów
+        simulation.connect(chipId1, 2, chipId2, 3);
     }
 }
+

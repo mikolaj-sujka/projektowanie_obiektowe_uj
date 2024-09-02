@@ -53,9 +53,9 @@ public class SimulationService
                 // Sprawdzamy stan tylko tych pinów, które są połączone z innymi
                 if (pin.isConnected() && pin.getState() == PinState.UNKNOWN) {
                     ComponentPinState unknownState = new ComponentPinState(component.getId(), pin.getPinNumber(), pin.getState());
-                    if (!isTemporaryUnknownState(component.getId(), unknownState.pinId())) {
+//                    if (!isTemporaryUnknownState(component.getId(), unknownState.pinId())) {
                         throw new UnknownStateException(unknownState);
-                    }
+//                    }
                 }
             }
         }
@@ -131,23 +131,16 @@ public class SimulationService
         components.put(component.getId(), component); // Add the component to the map using its ID as the key
     }
 
-    private boolean isTemporaryUnknownState(int componentId, int pinId) {
-        // Implementacja logiki sprawdzającej, czy stan UNKNOWN dla tego pinu jest tymczasowy
-        // Na przykład, jeśli ten pin jest połączony z innym pinem, którego stan może się zmienić
-        // w wyniku kolejnych kroków symulacji, możemy uznać stan UNKNOWN za tymczasowy.
-
-        // Przykładowa logika: sprawdzamy, czy pin jest połączony z innym pinem, który może mieć zmienny stan
-        Component component = getComponentById(componentId);
-        Set<Pin> pins = component.getPins();
-        Pin pin = pins.stream().filter(p -> p.getPinNumber() == pinId).findFirst().get();
-
-        if (pin.isConnected()) {
-            Pin connectedPin = pin.getConnectedPin();
-            // Zakładamy, że jeśli stan połączonego pinu jest wciąż nieustalony (UNKNOWN), to jest to tymczasowy stan
-            return connectedPin.getState() == PinState.UNKNOWN;
-        }
-
-        // Jeśli pin nie jest połączony lub stan jest ostateczny, zwracamy false
-        return false;
-    }
+//    private boolean isTemporaryUnknownState(int componentId, int pinId) {
+//        Component component = getComponentById(componentId);
+//        Set<Pin> pins = component.getPins();
+//        Pin pin = pins.stream().filter(p -> p.getPinNumber() == pinId).findFirst().get();
+//
+//        if (pin.isConnected()) {
+//            Pin connectedPin = pin.getConnectedPin();
+//            return connectedPin.getState() == PinState.UNKNOWN;
+//        }
+//
+//        return false;
+//    }
 }

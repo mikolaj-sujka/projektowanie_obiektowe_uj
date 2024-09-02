@@ -23,6 +23,10 @@ public class DelayComponent extends Component {
             Pin input = pins.get(i);
             Pin output = pins.get(previousStates.length + i);
 
+            if (isPowerPin(input.getPinNumber()) || isPowerPin(output.getPinNumber())) {
+                continue;
+            }
+
             // Ustawienie wyjścia na podstawie poprzedniego stanu wejścia
             output.setState(previousStates[i - 1]);
 

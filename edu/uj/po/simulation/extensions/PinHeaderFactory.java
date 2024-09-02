@@ -1,30 +1,20 @@
 package edu.uj.po.simulation.extensions;
 
-
-
 import edu.uj.po.simulation.entities.Component;
 import edu.uj.po.simulation.entities.PinHeaderComponent;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class PinHeaderFactory implements IPinHeaderFactory{
-    private static int nextComponentId = 1; // Generator unikalnych ID
-    private Map<Integer, Component> components = new HashMap<>();
-
-    @Override
-    public int createOutputPinHeader(int size) {
-        Component pinHeader = new PinHeaderComponent(nextComponentId, size, true);
-        int componentId = nextComponentId++;
-        components.put(componentId, pinHeader);
-        return componentId;
+    public Component createOutputPinHeader(int size) {
+        int componentId = UniqueIdGenerator.getNextId();
+        Component pinHeader = new PinHeaderComponent(componentId, size, true);
+        pinHeader.setId(componentId);
+        return pinHeader;
     }
 
-    @Override
-    public int createInputPinHeader(int size) {
-        Component pinHeader = new PinHeaderComponent(nextComponentId, size, false);
-        int componentId = nextComponentId++;
-        components.put(componentId, pinHeader);
-        return componentId;
+    public Component createInputPinHeader(int size) {
+        int componentId = UniqueIdGenerator.getNextId();
+        Component pinHeader = new PinHeaderComponent(componentId, size, false);
+        pinHeader.setId(componentId);
+        return pinHeader;
     }
 }
