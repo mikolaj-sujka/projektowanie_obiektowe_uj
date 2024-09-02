@@ -1,18 +1,10 @@
 package edu.uj.po.simulation.services;
 
 
-import edu.uj.po.simulation.interfaces.ComponentPinState;
-import edu.uj.po.simulation.interfaces.PinState;
-import edu.uj.po.simulation.interfaces.UnknownPin;
-import edu.uj.po.simulation.interfaces.UnknownStateException;
-import edu.uj.po.simulation.entities.Component;
-import edu.uj.po.simulation.entities.Pin;
+import edu.uj.po.simulation.interfaces.*;
+import edu.uj.po.simulation.entities.*;
 import edu.uj.po.simulation.observers.PinStateObserver;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class SimulationService
 {
@@ -27,12 +19,7 @@ public class SimulationService
                 throw new UnknownStateException(state);
             }
 
-            Pin pin;
-            try {
-                pin = component.getPin(state.pinId());
-            } catch (UnknownPin e) {
-                throw new RuntimeException(e);
-            }
+            Pin pin = component.getPin(state.pinId());
 
             if (pin == null) {
                 throw new UnknownStateException(state);
@@ -49,15 +36,15 @@ public class SimulationService
             // Wykonanie logiki komponentu
             component.performLogic();
 
-            for (Pin pin : component.getPins()) {
-                // Sprawdzamy stan tylko tych pinów, które są połączone z innymi
-                if (pin.isConnected() && pin.getState() == PinState.UNKNOWN) {
-                    ComponentPinState unknownState = new ComponentPinState(component.getId(), pin.getPinNumber(), pin.getState());
-//                    if (!isTemporaryUnknownState(component.getId(), unknownState.pinId())) {
-                        throw new UnknownStateException(unknownState);
-//                    }
-                }
-            }
+//            for (Pin pin : component.getPins()) {
+//                // Sprawdzamy stan tylko tych pinów, które są połączone z innymi
+//                if (pin.isConnected() && pin.getState() == PinState.UNKNOWN) {
+//                    ComponentPinState unknownState = new ComponentPinState(component.getId(), pin.getPinNumber(), pin.getState());
+////                    if (!isTemporaryUnknownState(component.getId(), unknownState.pinId())) {
+//                        throw new UnknownStateException(unknownState);
+////                    }
+//                }
+//            }
         }
     }
 
@@ -93,13 +80,13 @@ public class SimulationService
             if (component != null) {
                 component.performLogic(); // Wykonanie logiki komponentu
 
-                for (Pin pin : component.getPins()) {
-                    // Jeśli stan pinu się zmienił, dodajemy nowy stan do zbioru nextStates
-                    if (pin.getState() != state.state()) {
-                        component.setPinState(pin.getPinNumber(), pin.getState());
-                        nextStates.add(new ComponentPinState(component.getId(), pin.getPinNumber(), pin.getState()));
-                    }
-                }
+//                for (Pin pin : component.getPins()) {
+//                    // Jeśli stan pinu się zmienił, dodajemy nowy stan do zbioru nextStates
+//                    if (pin.getState() != state.state()) {
+//                        component.setPinState(pin.getPinNumber(), pin.getState());
+//                        nextStates.add(new ComponentPinState(component.getId(), pin.getPinNumber(), pin.getState()));
+//                    }
+//                }
             }
         }
 

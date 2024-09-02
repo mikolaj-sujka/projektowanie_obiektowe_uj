@@ -2,13 +2,10 @@ package edu.uj.po.simulation.services;
 
 
 
-import edu.uj.po.simulation.interfaces.ComponentPinState;
-import edu.uj.po.simulation.interfaces.UnknownStateException;
+import edu.uj.po.simulation.interfaces.*;
 import edu.uj.po.simulation.entities.Component;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class OptimizationService {
     private final SimulationService simulationService;

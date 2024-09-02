@@ -1,20 +1,14 @@
 package edu.uj.po.simulation.services;
 
-
-import edu.uj.po.simulation.entities.PinHeaderComponent;
-import edu.uj.po.simulation.interfaces.ShortCircuitException;
-import edu.uj.po.simulation.interfaces.UnknownChip;
-import edu.uj.po.simulation.interfaces.UnknownComponent;
-import edu.uj.po.simulation.interfaces.UnknownPin;
-import edu.uj.po.simulation.entities.Component;
-import edu.uj.po.simulation.entities.Pin;
-import edu.uj.po.simulation.extensions.ComponentFactory;
-import edu.uj.po.simulation.extensions.PinHeaderFactory;
+import edu.uj.po.simulation.interfaces.*;
+import edu.uj.po.simulation.entities.*;
+import edu.uj.po.simulation.extensions.*;
 
 import java.util.HashMap;
-import java.util.Set;
+import java.util.Map;
 
 public class ComponentService {
+    private static int componentId = 1;
     ComponentFactory componentFactory = new ComponentFactory();
     PinHeaderFactory pinHeaderFactory = new PinHeaderFactory();
     HashMap<Integer, Component> components = new HashMap<>();
@@ -25,7 +19,7 @@ public class ComponentService {
     }
 
     public int createChip(int code) throws UnknownChip {
-        Component component = componentFactory.createChip(code);
+        Component component = componentFactory.createChip(code, componentId++);
         int componentId = getComponentId(component);
         components.put(componentId, component);
         simulationService.addComponent(component);
@@ -33,82 +27,87 @@ public class ComponentService {
     }
 
     public int createOutputPinHeader(int size) {
-        Component pinHeader = pinHeaderFactory.createOutputPinHeader(size);
+        Component pinHeader = pinHeaderFactory.createOutputPinHeader(size, componentId++);
         components.put(getComponentId(pinHeader), pinHeader);
         simulationService.addComponent(pinHeader);
         return pinHeader.getId();
     }
 
     public int createInputPinHeader(int size) {
-        Component pinHeader = pinHeaderFactory.createInputPinHeader(size);
+        Component pinHeader = pinHeaderFactory.createInputPinHeader(size, componentId++);
         components.put(getComponentId(pinHeader), pinHeader);
         simulationService.addComponent(pinHeader);
         return pinHeader.getId();
     }
 
     public void connect(int component1Id, int pin1, int component2Id, int pin2) throws UnknownComponent, UnknownPin, ShortCircuitException {
-        Component component1 = components.get(component1Id);
 
-        if (component1 == null) {
+        if (!components.containsKey(component1Id)) {
             throw new UnknownComponent(component1Id);
         }
 
-        Pin pin1Obj = component1.getPin(pin1);
-
-        Component component2 = components.get(component2Id);
-        if (component2 == null) {
+        if (!components.containsKey(component2Id)) {
             throw new UnknownComponent(component2Id);
         }
 
-        Pin pin2Obj = component2.getPin(pin2);
+        Component component1 = components.get(component1Id);
 
-        component1.validateConnection(pin1Obj, pin2Obj, component1.getId(), component2.getId());
-        component2.validateConnection(pin2Obj, pin1Obj, component1.getId(), component2.getId());
-
-        if (pin1Obj.isConnected() && pin1Obj.getConnectedPins().contains(pin2Obj)) {
-            return;
+        if (!component1.getPins().containsKey(pin2)) {
+            throw new UnknownPin(component1Id, pin1);
         }
 
+        Pin pin1Obj = getPinByPinNumber(pin1, component1Id, component1.getPins());
+
+        Component component2 = components.get(component2Id);
+
+        Pin pin2Obj = getPinByPinNumber(pin2, component2Id, component2.getPins());
+
+        PinGroup pinGroup1 = pin1Obj.getPinGroup();
+
+        PinGroup pinGroup2 = pin2Obj.getPinGroup();
 
         if (pin1Obj.isOutput() && pin2Obj.isOutput()) {
             throw new ShortCircuitException();
         }
 
-        if (pin1Obj.isConnected()) {
-            Set<Pin> connectedPins = pin1Obj.getConnectedPins();
-            boolean hasConnectedOutput = connectedPins.stream().anyMatch(Pin::isOutput);
-
-            if (hasConnectedOutput && pin2Obj.isOutput()) {
-                throw new ShortCircuitException();
-            }
-        }
-
-        if (pin2Obj.isConnected()) {
-            Set<Pin> connectedPins = pin2Obj.getConnectedPins();
-
-            boolean hasConnectedOutput = connectedPins.stream().anyMatch(Pin::isOutput);
-
-            if (hasConnectedOutput && pin1Obj.isOutput()) {
-                throw new ShortCircuitException();
-            }
-        }
-
-        if (isUserInputHeader(component1Id) && pin1Obj.isOutput() && !pin2Obj.isOutput()) {
-            throw new ShortCircuitException();
-        }
-        if (isUserInputHeader(component2Id) && pin2Obj.isOutput() && !pin1Obj.isOutput()) {
+        if (!pin1Obj.isOutput() && !pin2Obj.isOutput() && pinGroup1 != pinGroup2) {
             throw new ShortCircuitException();
         }
 
-        pin1Obj.connect(pin2Obj);
+        if (!pin1Obj.isOutput() && !pin2Obj.isOutput() && pinGroup1 != null && pinGroup2 != null && pinGroup1 != pinGroup2) {
+            throw new ShortCircuitException();
+        }
+
+        if (pinGroup1 != null && pinGroup2 == null) {
+            if (pin2Obj.isOutput() && pinGroup1.hasOutput()) {
+                throw new ShortCircuitException();
+            }
+            pin1Obj.connect(pin2Obj);
+        } else if (pinGroup2 != null && pinGroup1 == null) {
+            if (pin1Obj.isOutput() && pinGroup2.hasOutput()) {
+                throw new ShortCircuitException();
+            }
+            pin1Obj.connect(pin2Obj);
+        } else if (pinGroup1 != null && pinGroup2 != null) {
+            if (pinGroup1.hasOutput() && pinGroup2.hasOutput()) {
+                throw new ShortCircuitException();
+            }
+            pin1Obj.connect(pin2Obj);
+        } else {
+            pin1Obj.connect(pin2Obj);
+        }
     }
 
-    public int getComponentId(Component component) {
+    private int getComponentId(Component component) {
         return component.getId();
     }
 
-    private boolean isUserInputHeader(int componentId) {
-        Component component = components.get(componentId);
-        return component instanceof PinHeaderComponent && !((PinHeaderComponent) component).isOutput();
+    private Pin getPinByPinNumber(int pinNumber, int componentId, Map<Integer, Pin> pins) throws UnknownPin {
+        for (Pin pin : pins.values()) {
+            if (pin.getPinNumber() == pinNumber) {
+                return pin;
+            }
+        }
+        throw new UnknownPin(componentId, pinNumber);
     }
 }

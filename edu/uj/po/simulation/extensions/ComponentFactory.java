@@ -7,54 +7,53 @@ import edu.uj.po.simulation.entities.components.*;
 
 public class ComponentFactory implements IComponentFactory{
 
-    public Component createChip(int code) throws UnknownChip {
+    public Component createChip(int code, int componentId) throws UnknownChip {
         Component component;
-        int componentId = UniqueIdGenerator.getNextId();
         switch (code) {
             case 7400: // 4x NAND
-                component = new NandGateComponent(componentId, 4);
+                component = new Component7400(componentId);
                 break;
             case 7402: // 4x NOR
-                component = new NorGateComponent(componentId, 4);
+                component = new Component7402(componentId);
                 break;
             case 7404: // 6x NOT
-                component = new NotGateComponent(componentId, 6);
+                component = new Component7404(componentId);
                 break;
             case 7408: // 4x AND
-                component = new AndGateComponent(componentId, 4);
+                component = new Component7408(componentId);
                 break;
             case 7410: // 3x NAND
-                component = new NandGateComponent(componentId, 3);
+                component = new Component7410(componentId);
                 break;
             case 7411: // 3x AND
-                component = new AndGateComponent(componentId, 3);
+                component = new Component7411(componentId);
                 break;
             case 7420: // 2x NAND
-                component = new NandGateComponent(componentId, 2);
+                component = new Component7420(componentId);
                 break;
             case 7431: // 6 elementów opóźniających
-                component = new DelayComponent(componentId, 6);
+                component = new Component7431(componentId);
                 break;
             case 7432: // 4x OR
-                component = new OrGateComponent(componentId, 4);
+                component = new Component7432(componentId);
                 break;
             case 7434: // 6 buforów
-                component = new BufferComponent(componentId, 6);
+                component = new Component7434(componentId);
                 break;
             case 7442: // dekoder BCD na kod 1 z 10
-                component = new BcdDecoderComponent(componentId);
+                component = new Component7442(componentId);
                 break;
             case 7444: // dekoder kodu GRAY'a na 1 z 10
-                component = new GrayDecoderComponent(componentId);
+                component = new Component7444(componentId);
                 break;
             case 7482: // pełny sumator dwu-bitowy
-                component = new FullAdderComponent(componentId);
+                component = new Component7482(componentId);
                 break;
             case 74138: // dekoder/demultiplekser 3 z 8 linii
-                component = new DemultiplexerComponent(componentId);
+                component = new Component74138(componentId);
                 break;
             case 74152: // multiplekser 8-kanałowy
-                component = new MultiplexerComponent(componentId);
+                component = new Component74152(componentId);
                 break;
             default:
                 throw new UnknownChip();

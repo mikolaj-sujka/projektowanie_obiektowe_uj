@@ -9,13 +9,13 @@ import edu.uj.po.simulation.observers.IPinStateObserver;
 import java.util.*;
 
 public abstract class Component {
-    protected int id; // Unikalny identyfikator komponentu
-    protected Map<Integer, Pin> pins; // Mapa pinów przypisanych do komponentu
+    protected int id;
+    protected Map<Integer, Pin> pins;
     private List<IPinStateObserver> observers = new ArrayList<>();
 
-    public Component(int id) {
+    public Component(int id, Map<Integer, Pin> pins) {
         this.id = id;
-        this.pins = new HashMap<>();
+        this.pins = pins;
     }
 
     public int getId() {
@@ -26,16 +26,12 @@ public abstract class Component {
         this.id = id;
     }
 
-    public Pin getPin(int pinNumber) throws UnknownPin {
-        Pin pin = pins.get(pinNumber);
-        if (pin == null) {
-            throw new UnknownPin(id, pinNumber);
-        }
-        return pin;
+    public Pin getPin(int pinNumber)  {
+        return pins.get(pinNumber);
     }
 
-    public Set<Pin> getPins() {
-        return new HashSet<>(pins.values()); // Convert the values of the map to a Set and return it
+    public Map<Integer, Pin> getPins() {
+        return pins;
     }
 
     public void addPin(int pinNumber, Pin pin) {
@@ -43,10 +39,6 @@ public abstract class Component {
     }
 
     public abstract void performLogic(); // Metoda abstrakcyjna do wykonania logiki specyficznej dla komponentu
-
-    public void validateConnection(Pin pin1, Pin pin2, int component1, int component2) throws ShortCircuitException {
-        // Domyślna implementacja, w razie potrzeby można ją nadpisać w podklasach
-    }
 
     public void addObserver(IPinStateObserver observer) {
         observers.add(observer);
@@ -64,9 +56,5 @@ public abstract class Component {
             pin.setState(state);
             notifyObservers(state);
         }
-    }
-
-    public boolean isPowerPin(int pin) {
-        return pin == 14 || pin == 7; // piny 14 i 7 to Vcc i GND
     }
 }

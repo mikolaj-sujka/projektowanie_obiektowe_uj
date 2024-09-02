@@ -5,5 +5,5 @@ import edu.uj.po.simulation.interfaces.UnknownChip;
 import edu.uj.po.simulation.entities.Component;
 
 public interface IComponentFactory {
-    public Component createChip(int code) throws UnknownChip;
+    public Component createChip(int code, int componentId) throws UnknownChip;
 }
