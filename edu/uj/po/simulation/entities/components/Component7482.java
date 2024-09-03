@@ -14,61 +14,64 @@ public class Component7482 extends Component {
         super(id, createPins());
     }
 
-
     private static Map<Integer, Pin> createPins() {
         Map<Integer, Pin> pins = new HashMap<>();
 
         // Wejścia
-        pins.put(1, new Pin(1, false));  // Wejście A
-        pins.put(2, new Pin(2, false));  // Wejście B
-        pins.put(3, new Pin(3, false));  // Wejście C
-        pins.put(4, new Pin(4, false));  // Wejście D
+        pins.put(2, new Pin(2, false));  // Wejście A1
+        pins.put(14, new Pin(14, false)); // Wejście A2
+        pins.put(3, new Pin(3, false)); // Wejscie B1
+        pins.put(13, new Pin(13, false)); // Wejście B2
+        pins.put(5, new Pin(5, false)); // C0
 
         // Wyjścia
-        pins.put(5, new Pin(5, true));   // Wyjście S1 (wynik bitowy)
-        pins.put(6, new Pin(6, true));   // Wyjście S2 (wynik sumy)
-        pins.put(7, new Pin(7, true));   // Wyjście C (carry out, przeniesienie)
+        pins.put(1, new Pin(1, true)); // Wyjscie S1
+        pins.put(10, new Pin(10, true)); // Wyjście C2
+        pins.put(12, new Pin(12, true)); // Wyjscie S2
 
         return pins;
     }
 
     @Override
     public void performLogic() {
-        Pin inputA = pins.get(1);
-        Pin inputB = pins.get(2);
-        Pin inputC = pins.get(3);
-        Pin inputD = pins.get(4);
+        Pin inputA1 = pins.get(2);
+        Pin inputB1 = pins.get(3);
+        Pin inputC0 = pins.get(5);
+        Pin inputA2 = pins.get(14);
+        Pin inputB2 = pins.get(13);
 
-        Pin outputS1 = pins.get(5);
-        Pin outputS2 = pins.get(6);
-        Pin outputC = pins.get(7);
+        Pin outputS1 = pins.get(1);
+        Pin outputS2 = pins.get(12);
+        Pin outputC2 = pins.get(10);
 
         // Obsługa stanu UNKNOWN
-        if (inputA.getState() == PinState.UNKNOWN || inputB.getState() == PinState.UNKNOWN ||
-                inputC.getState() == PinState.UNKNOWN || inputD.getState() == PinState.UNKNOWN) {
+        if (inputA1.getState() == PinState.UNKNOWN || inputB1.getState() == PinState.UNKNOWN ||
+                inputC0.getState() == PinState.UNKNOWN || inputA2.getState() == PinState.UNKNOWN ||
+                inputB2.getState() == PinState.UNKNOWN) {
             outputS1.setState(PinState.UNKNOWN);
             outputS2.setState(PinState.UNKNOWN);
-            outputC.setState(PinState.UNKNOWN);
+            outputC2.setState(PinState.UNKNOWN);
             return;
         }
 
         // Obliczanie wyjść na podstawie stanu wejść
-        boolean a = inputA.getState() == PinState.HIGH;
-        boolean b = inputB.getState() == PinState.HIGH;
-        boolean c = inputC.getState() == PinState.HIGH;
-        boolean d = inputD.getState() == PinState.HIGH;
+        boolean a1 = inputA1.getState() == PinState.HIGH;
+        boolean b1 = inputB1.getState() == PinState.HIGH;
+        boolean c0 = inputC0.getState() == PinState.HIGH;
+        boolean a2 = inputA2.getState() == PinState.HIGH;
+        boolean b2 = inputB2.getState() == PinState.HIGH;
 
         // Wynik pierwszego sumatora
-        boolean s1 = a ^ b ^ c;  // S1 = A XOR B XOR C
-        boolean carry1 = (a && b) || (b && c) || (a && c);  // Carry1 = AB + BC + AC
+        boolean s1 = a1 ^ b1 ^ c0;
+        boolean carry1 = (a1 && b1) || (b1 && c0) || (a1 && c0);
 
-        // Wynik drugiego sumatora (zależny od wyniku pierwszego)
-        boolean s2 = s1 ^ d;  // S2 = S1 XOR D
-        boolean carry2 = (s1 && d) || carry1;  // Carry2 = S1D + Carry1
+        // Wynik drugiego sumatora (zależny od pierwszego)
+        boolean s2 = a2 ^ b2 ^ carry1;
+        boolean carry2 = (a2 && b2) || (b2 && carry1) || (a2 && carry1);
 
         // Ustawienie stanów wyjść
         outputS1.setState(s1 ? PinState.HIGH : PinState.LOW);
         outputS2.setState(s2 ? PinState.HIGH : PinState.LOW);
-        outputC.setState(carry2 ? PinState.HIGH : PinState.LOW);
+        outputC2.setState(carry2 ? PinState.HIGH : PinState.LOW);
     }
 }

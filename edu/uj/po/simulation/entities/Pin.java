@@ -27,20 +27,15 @@ public class Pin {
     }
 
     public void setState(PinState newState) {
-        if (!isUpdatingState) {
-            isUpdatingState = true;  // Ustaw flagę na true, aby zapobiec rekurencji
-
+        if (this.state != newState) {
             this.state = newState;
-
             if (pinGroup != null) {
                 for (Pin connectedPin : pinGroup.getPins()) {
-                    if (!connectedPin.isUpdatingState) {
+                    if (!connectedPin.isOutput()) {
                         connectedPin.setState(newState);
                     }
                 }
             }
-
-            isUpdatingState = false;  // Ustaw flagę z powrotem na false po zakończeniu
         }
     }
 
@@ -54,22 +49,18 @@ public class Pin {
         }
 
         if (this.pinGroup == null && otherPin.getPinGroup() == null) {
-            // Tworzymy nową grupę tylko wtedy, gdy oba piny nie należą jeszcze do żadnej grupy
             PinGroup newGroup = new PinGroup();
             newGroup.addPin(this);
             newGroup.addPin(otherPin);
             this.pinGroup = newGroup;
             otherPin.setPinGroup(newGroup);
         } else if (this.pinGroup == null) {
-            // Jeśli tylko jeden pin ma grupę, dołącz do tej grupy
             otherPin.getPinGroup().addPin(this);
             this.pinGroup = otherPin.getPinGroup();
         } else if (otherPin.getPinGroup() == null) {
-            // Jeśli drugi pin nie ma grupy, dołącz do grupy pierwszego pinu
             this.pinGroup.addPin(otherPin);
             otherPin.setPinGroup(this.pinGroup);
         } else {
-            // Jeśli oba piny mają grupy, scalamy te grupy
             PinGroup groupToMerge = otherPin.getPinGroup();
             for (Pin pin : groupToMerge.getPins()) {
                 this.pinGroup.addPin(pin);

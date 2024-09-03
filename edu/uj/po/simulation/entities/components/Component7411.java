@@ -16,6 +16,7 @@ public class Component7411 extends Component {
     private static Map<Integer, Pin> createPins() {
         Map<Integer, Pin> pins = new HashMap<>();
 
+        // Definiowanie pinów
         pins.put(1, new Pin(1, false));  // Wejście 1A
         pins.put(2, new Pin(2, false));  // Wejście 1B
         pins.put(13, new Pin(13, false));  // Wejście 1C
@@ -29,13 +30,14 @@ public class Component7411 extends Component {
         pins.put(9, new Pin(9, false));  // Wejście 3A
         pins.put(10, new Pin(10, false)); // Wejście 3B
         pins.put(11, new Pin(11, false)); // Wejście 3C
-        pins.put(8, new Pin(12, true));  // Wyjście 3Y
+        pins.put(8, new Pin(8, true));  // Wyjście 3Y
 
         return pins;
     }
 
     @Override
     public void performLogic() {
+        // Logika bramek AND
         performLogicForGate(1, 2, 13, 12); // Bramka 1
         performLogicForGate(3, 4, 5, 6); // Bramka 2
         performLogicForGate(9, 10, 11, 8); // Bramka 3

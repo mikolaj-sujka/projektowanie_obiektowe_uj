@@ -16,6 +16,7 @@ public class Component7410 extends Component {
     private static Map<Integer, Pin> createPins() {
         Map<Integer, Pin> pins = new HashMap<>();
 
+        // Poprawiona numeracja pinów
         pins.put(1, new Pin(1, false));  // Wejście A1
         pins.put(2, new Pin(2, false));  // Wejście B1
         pins.put(13, new Pin(13, false));  // Wejście C1
@@ -29,16 +30,16 @@ public class Component7410 extends Component {
         pins.put(9, new Pin(9, false));  // Wejście A3
         pins.put(10, new Pin(10, false)); // Wejście B3
         pins.put(11, new Pin(11, false)); // Wejście C3
-        pins.put(8, new Pin(3, true));  // Wyjście Y3
+        pins.put(8, new Pin(8, true));  // Wyjście Y3
 
         return pins;
     }
 
     @Override
     public void performLogic() {
-        performLogicForGate(1, 2, 13, 12);
-        performLogicForGate(5, 3, 4, 6);
-        performLogicForGate(9, 10, 11, 12);
+        performLogicForGate(1, 2, 13, 12); // Pierwsza bramka NAND
+        performLogicForGate(5, 3, 4, 6);   // Druga bramka NAND
+        performLogicForGate(9, 10, 11, 8); // Trzecia bramka NAND
     }
 
     private void performLogicForGate(int inputAPin, int inputBPin, int inputCPin, int outputPin) {
@@ -50,9 +51,9 @@ public class Component7410 extends Component {
         if (inputA.getState() == PinState.UNKNOWN || inputB.getState() == PinState.UNKNOWN || inputC.getState() == PinState.UNKNOWN) {
             output.setState(PinState.UNKNOWN);
         } else if (inputA.getState() == PinState.HIGH && inputB.getState() == PinState.HIGH && inputC.getState() == PinState.HIGH) {
-            output.setState(PinState.LOW);
+            output.setState(PinState.LOW);  // Bramka NAND: HIGH + HIGH + HIGH = LOW
         } else {
-            output.setState(PinState.HIGH);
+            output.setState(PinState.HIGH); // Bramka NAND: każda inna kombinacja = HIGH
         }
     }
 }

@@ -58,12 +58,16 @@ public class ComponentService {
 
         Pin pin2Obj = getPinByPinNumber(pin2, component2Id, component2.getPins());
 
-        PinGroup pinGroup1 = pin1Obj.getPinGroup();
+        if ( component1.isPinHeader() && component2.isPinHeader() ) {
+            if (pin1Obj.isOutput() && pin2Obj.isOutput()) {
+                throw new ShortCircuitException();
+            }
+        }
 
-        PinGroup pinGroup2 = pin2Obj.getPinGroup();
-
-        if (pin1Obj.isOutput() && pin2Obj.isOutput()) {
-            throw new ShortCircuitException();
+        if ( !component1.isPinHeader() && !component2.isPinHeader() ) {
+            if (pin1Obj.isOutput() && pin2Obj.isOutput()) {
+                throw new ShortCircuitException();
+            }
         }
 
         pin1Obj.connect(pin2Obj);

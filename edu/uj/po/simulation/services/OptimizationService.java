@@ -20,19 +20,14 @@ public class OptimizationService {
 
         // Przechodzimy przez wszystkie komponenty, aby sprawdzić, które można usunąć
         for (Component component : simulationService.getComponents().values()) {
-            // Temporarily remove the component from the system
             simulationService.removeComponent(component.getId());
 
-            // Run the simulation without this component
             Map<Integer, Set<ComponentPinState>> modifiedSimulation = simulationService.simulation(states0, ticks);
 
-            // Compare the baseline and modified simulations
             if (baselineSimulation.equals(modifiedSimulation)) {
-                // If the results are the same, this component can be removed
                 removableComponents.add(component.getId());
             }
 
-            // Restore the component to the system
             simulationService.addComponent(component);
         }
 

@@ -1,15 +1,15 @@
 package edu.uj.po.simulation.entities;
 
 
+import edu.uj.po.simulation.interfaces.ComponentPinState;
 import edu.uj.po.simulation.interfaces.PinState;
-import edu.uj.po.simulation.interfaces.ShortCircuitException;
-import edu.uj.po.simulation.interfaces.UnknownPin;
 import edu.uj.po.simulation.observers.IPinStateObserver;
 
 import java.util.*;
 
 public abstract class Component {
     protected int id;
+    protected boolean isPinHeader = false;
     protected Map<Integer, Pin> pins;
     private List<IPinStateObserver> observers = new ArrayList<>();
 
@@ -28,6 +28,10 @@ public abstract class Component {
 
     public Pin getPin(int pinNumber)  {
         return pins.get(pinNumber);
+    }
+
+    public boolean isPinHeader() {
+        return isPinHeader;
     }
 
     public Map<Integer, Pin> getPins() {
@@ -55,6 +59,16 @@ public abstract class Component {
         if (pin != null && pin.getState() != state) {
             pin.setState(state);
             notifyObservers(state);
+        }
+    }
+
+    public void updateConnectedPinStates(Set<ComponentPinState> currentTickStates) {
+        for (Pin pin : pins.values()) {
+            if (pin.isConnected()) {
+                for (Pin connectedPin : pin.getPinGroup().getPins()) {
+                    currentTickStates.add(new ComponentPinState(this.getId(), connectedPin.getPinNumber(), connectedPin.getState()));
+                }
+            }
         }
     }
 }

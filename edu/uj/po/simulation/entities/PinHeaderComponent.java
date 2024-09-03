@@ -8,6 +8,7 @@ public class PinHeaderComponent extends Component {
     public PinHeaderComponent(int id, int size, boolean isOutput) {
         super(id,createPins(size, isOutput));
         this.isOutput = isOutput;
+        this.isPinHeader = true;
     }
 
     private static Map<Integer, Pin> createPins(int size, boolean isOutput) {
