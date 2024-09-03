@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ComponentService {
-    private static int componentId = 1;
+    private static int componentId = 0;
     ComponentFactory componentFactory = new ComponentFactory();
     PinHeaderFactory pinHeaderFactory = new PinHeaderFactory();
     HashMap<Integer, Component> components = new HashMap<>();
@@ -52,10 +52,6 @@ public class ComponentService {
 
         Component component1 = components.get(component1Id);
 
-        if (!component1.getPins().containsKey(pin2)) {
-            throw new UnknownPin(component1Id, pin1);
-        }
-
         Pin pin1Obj = getPinByPinNumber(pin1, component1Id, component1.getPins());
 
         Component component2 = components.get(component2Id);
@@ -70,32 +66,7 @@ public class ComponentService {
             throw new ShortCircuitException();
         }
 
-        if (!pin1Obj.isOutput() && !pin2Obj.isOutput() && pinGroup1 != pinGroup2) {
-            throw new ShortCircuitException();
-        }
-
-        if (!pin1Obj.isOutput() && !pin2Obj.isOutput() && pinGroup1 != null && pinGroup2 != null && pinGroup1 != pinGroup2) {
-            throw new ShortCircuitException();
-        }
-
-        if (pinGroup1 != null && pinGroup2 == null) {
-            if (pin2Obj.isOutput() && pinGroup1.hasOutput()) {
-                throw new ShortCircuitException();
-            }
-            pin1Obj.connect(pin2Obj);
-        } else if (pinGroup2 != null && pinGroup1 == null) {
-            if (pin1Obj.isOutput() && pinGroup2.hasOutput()) {
-                throw new ShortCircuitException();
-            }
-            pin1Obj.connect(pin2Obj);
-        } else if (pinGroup1 != null && pinGroup2 != null) {
-            if (pinGroup1.hasOutput() && pinGroup2.hasOutput()) {
-                throw new ShortCircuitException();
-            }
-            pin1Obj.connect(pin2Obj);
-        } else {
-            pin1Obj.connect(pin2Obj);
-        }
+        pin1Obj.connect(pin2Obj);
     }
 
     private int getComponentId(Component component) {

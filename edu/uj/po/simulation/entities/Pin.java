@@ -6,7 +6,7 @@ import edu.uj.po.simulation.interfaces.PinState;
 public class Pin {
     private final int pinNumber;
     private PinState state;
-    private final boolean isOutput;
+    private boolean isOutput;
     private PinGroup pinGroup;
     private boolean isUpdatingState;
 
