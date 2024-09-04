@@ -2,6 +2,7 @@ package edu.uj.po.simulation.entities;
 
 
 import edu.uj.po.simulation.interfaces.PinState;
+import edu.uj.po.simulation.interfaces.UnknownStateException;
 import edu.uj.po.simulation.observers.IPinStateObserver;
 
 import java.util.*;
@@ -37,7 +38,7 @@ public abstract class Component {
         return pins;
     }
 
-    public abstract void performLogic(); // Metoda abstrakcyjna do wykonania logiki specyficznej dla komponentu
+    public abstract void performLogic() throws UnknownStateException; // Metoda abstrakcyjna do wykonania logiki specyficznej dla komponentu
 
     public void addObserver(IPinStateObserver observer) {
         observers.add(observer);

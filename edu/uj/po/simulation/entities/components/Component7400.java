@@ -5,9 +5,7 @@ import edu.uj.po.simulation.interfaces.PinState;
 import edu.uj.po.simulation.entities.Component;
 import edu.uj.po.simulation.entities.Pin;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Component7400 extends Component {

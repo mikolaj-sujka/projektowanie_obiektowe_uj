@@ -20,7 +20,7 @@ public class Pin {
 
     public void connect(Pin otherPin) {
         // Sprawdzenie, czy piny są już połączone w tej samej grupie
-        if (this.pinGroup == otherPin.getPinGroup() && this.pinGroup != null) {
+        if (this.pinGroup != null && this.pinGroup == otherPin.getPinGroup()) {
             return;
         }
 
@@ -54,7 +54,6 @@ public class Pin {
             }
         }
     }
-
 
     public void setState(PinState newState) {
         if (this.state != newState) {

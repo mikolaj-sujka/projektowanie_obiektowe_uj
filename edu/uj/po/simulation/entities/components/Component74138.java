@@ -25,7 +25,7 @@ public class Component74138 extends Component {
         pins.put(2, new Pin(2, false));  // Wejście B
         pins.put(3, new Pin(3, false));  // Wejście C
 
-        // Wyjścia Y0–Y7 (piny 15–9)
+        // Wyjścia Y0–Y7 (piny 15–9, 7)
         pins.put(15, new Pin(15, true)); // Wyjście Y0
         pins.put(14, new Pin(14, true)); // Wyjście Y1
         pins.put(13, new Pin(13, true)); // Wyjście Y2
@@ -47,33 +47,38 @@ public class Component74138 extends Component {
         Pin B = pins.get(2);
         Pin C = pins.get(3);
 
-        // Jeśli G1 jest LOW, G2A lub G2B są HIGH, to wszystkie wyjścia są HIGH
+        // Sprawdzanie aktywacji dekodera - jeśli G1 jest LOW lub G2A, G2B są HIGH, wyjścia są ustawione na HIGH
         if (G1.getState() == PinState.LOW || G2A.getState() == PinState.HIGH || G2B.getState() == PinState.HIGH) {
-            for (int i = 15; i >= 7; i--) {
-                if (i != 8) { // Pomijamy pin 8
-                    pins.get(i).setState(PinState.HIGH);
-                }
-            }
+            setAllOutputsToHigh();
             return;
         }
 
         // Obliczenie indeksu wyjścia na podstawie stanów A, B i C
         int index = (booleanToInt(C.getState()) << 2) | (booleanToInt(B.getState()) << 1) | booleanToInt(A.getState());
 
-        // Ustawienie wszystkich wyjść na HIGH
+        // Ustawienie wybranego wyjścia na LOW, pozostałe na HIGH
+        setAllOutputsToHigh();
+        setOutputLow(index);
+    }
+
+    // Metoda do ustawiania wszystkich wyjść na HIGH (z wyjątkiem pinu 8)
+    private void setAllOutputsToHigh() {
         for (int i = 15; i >= 7; i--) {
-            if (i != 8) { // Pomijamy pin 8
+            if (i != 8) { // Pin 8 jest pomijany
                 pins.get(i).setState(PinState.HIGH);
             }
         }
+    }
 
-        // Ustawienie wybranego wyjścia na LOW
-        int outputPin = 15 - index;
-        if (outputPin != 8) { // Pomijamy pin 8
+    // Metoda do ustawiania wybranego wyjścia na LOW
+    private void setOutputLow(int index) {
+        int outputPin = 15 - index;  // Mapowanie indeksu na numer pinu wyjścia
+        if (outputPin != 8) { // Pin 8 jest pomijany
             pins.get(outputPin).setState(PinState.LOW);
         }
     }
 
+    // Konwersja stanu pinu na wartość 0/1
     private int booleanToInt(PinState state) {
         return state == PinState.HIGH ? 1 : 0;
     }

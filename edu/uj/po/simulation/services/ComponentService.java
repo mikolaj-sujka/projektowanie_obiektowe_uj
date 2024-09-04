@@ -58,12 +58,6 @@ public class ComponentService {
 
         Pin pin2Obj = getPinByPinNumber(pin2, component2Id, component2.getPins());
 
-        if ( component1.isPinHeader() && component2.isPinHeader() ) {
-            if (pin1Obj.isOutput() && pin2Obj.isOutput()) {
-                throw new ShortCircuitException();
-            }
-        }
-
         if ( !component1.isPinHeader() && !component2.isPinHeader() ) {
             if (pin1Obj.isOutput() && pin2Obj.isOutput()) {
                 throw new ShortCircuitException();
