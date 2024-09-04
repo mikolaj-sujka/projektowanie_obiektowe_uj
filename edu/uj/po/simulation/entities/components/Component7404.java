@@ -41,17 +41,29 @@ public class Component7404 extends Component {
 
     @Override
     public void performLogic() {
-        for (int i = 1; i <= pins.size(); i += 2) {
-            Pin input = pins.get(i);
-            Pin output = pins.get(i + 1);
+        // Logika dla poszczególnych par pinów
+        invertPin(1, 2);
+        invertPin(3, 4);
+        invertPin(5, 6);
+        invertPin(9, 8);
+        invertPin(11, 10);
+        invertPin(13, 12);
+    }
 
-            if (input.getState() == PinState.UNKNOWN) {
-                output.setState(PinState.UNKNOWN);
-            } else if (input.getState() == PinState.HIGH) {
-                output.setState(PinState.LOW);
-            } else {
-                output.setState(PinState.HIGH);
-            }
+    private void invertPin(int inputPin, int outputPin) {
+        Pin input = pins.get(inputPin);
+        Pin output = pins.get(outputPin);
+
+        if (input == null || output == null) {
+            return;  // Sprawdzenie, czy pin istnieje, żeby uniknąć NullPointerException
+        }
+
+        if (input.getState() == PinState.UNKNOWN) {
+            output.setState(PinState.UNKNOWN);
+        } else if (input.getState() == PinState.HIGH) {
+            output.setState(PinState.LOW);
+        } else {
+            output.setState(PinState.HIGH);
         }
     }
 }

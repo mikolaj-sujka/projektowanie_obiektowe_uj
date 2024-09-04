@@ -1,7 +1,6 @@
 package edu.uj.po.simulation.entities;
 
 
-import edu.uj.po.simulation.interfaces.ComponentPinState;
 import edu.uj.po.simulation.interfaces.PinState;
 import edu.uj.po.simulation.observers.IPinStateObserver;
 
@@ -38,10 +37,6 @@ public abstract class Component {
         return pins;
     }
 
-    public void addPin(int pinNumber, Pin pin) {
-        pins.put(pinNumber, pin);
-    }
-
     public abstract void performLogic(); // Metoda abstrakcyjna do wykonania logiki specyficznej dla komponentu
 
     public void addObserver(IPinStateObserver observer) {
@@ -51,24 +46,6 @@ public abstract class Component {
     public void notifyObservers(PinState state) {
         for (IPinStateObserver observer : observers) {
             observer.updatePinState(state);
-        }
-    }
-
-    public void setPinState(int pinId, PinState state) {
-        Pin pin = pins.get(pinId);
-        if (pin != null && pin.getState() != state) {
-            pin.setState(state);
-            notifyObservers(state);
-        }
-    }
-
-    public void updateConnectedPinStates(Set<ComponentPinState> currentTickStates) {
-        for (Pin pin : pins.values()) {
-            if (pin.isConnected()) {
-                for (Pin connectedPin : pin.getPinGroup().getPins()) {
-                    currentTickStates.add(new ComponentPinState(this.getId(), connectedPin.getPinNumber(), connectedPin.getState()));
-                }
-            }
         }
     }
 }

@@ -6,7 +6,7 @@ import edu.uj.po.simulation.interfaces.PinState;
 public class Pin {
     private final int pinNumber;
     private PinState state;
-    private boolean isOutput;
+    private final boolean isOutput;
     private PinGroup pinGroup;
     private boolean isUpdatingState;
 
@@ -18,36 +18,13 @@ public class Pin {
         this.pinGroup = null;
     }
 
-    public int getPinNumber() {
-        return pinNumber;
-    }
-
-    public PinState getState() {
-        return state;
-    }
-
-    public void setState(PinState newState) {
-        if (this.state != newState) {
-            this.state = newState;
-            if (pinGroup != null) {
-                for (Pin connectedPin : pinGroup.getPins()) {
-                    if (!connectedPin.isOutput()) {
-                        connectedPin.setState(newState);
-                    }
-                }
-            }
-        }
-    }
-
-    public boolean isOutput() {
-        return isOutput;
-    }
-
     public void connect(Pin otherPin) {
+        // Sprawdzenie, czy piny są już połączone w tej samej grupie
         if (this.pinGroup == otherPin.getPinGroup() && this.pinGroup != null) {
             return;
         }
 
+        // Oba piny nie są połączone z żadną grupą
         if (this.pinGroup == null && otherPin.getPinGroup() == null) {
             PinGroup newGroup = new PinGroup();
             newGroup.addPin(this);
@@ -67,26 +44,37 @@ public class Pin {
                 otherPin.setPinGroup(this.pinGroup);
             }
         } else {
-            // Łączenie dwóch grup pinów
+            // Łączenie dwóch grup pinów (scalanie grup)
             PinGroup groupToMerge = otherPin.getPinGroup();
-
-            // Usuwanie duplikatów pinów oraz zapobieganie wielokrotnym pinom wyjściowym
             for (Pin pin : groupToMerge.getPins()) {
                 if (!this.pinGroup.getPins().contains(pin)) {
-                    if (pin.isOutput()) {
-                        // Sprawdzenie, czy grupa już zawiera pin wyjściowy, jeśli tak, pomijamy
-                        boolean hasOutputPin = this.pinGroup.getPins().stream().anyMatch(Pin::isOutput);
-                        if (!hasOutputPin) {
-                            this.pinGroup.addPin(pin);
-                            pin.setPinGroup(this.pinGroup);
-                        }
-                    } else {
-                        this.pinGroup.addPin(pin);
-                        pin.setPinGroup(this.pinGroup);
+                    this.pinGroup.addPin(pin);
+                    pin.setPinGroup(this.pinGroup);
+                }
+            }
+        }
+    }
+
+
+    public void setState(PinState newState) {
+        if (this.state != newState) {
+            this.state = newState;
+            if (pinGroup != null) {
+                for (Pin connectedPin : pinGroup.getPins()) {
+                    if (!connectedPin.isOutput()) {
+                        connectedPin.setState(newState);
                     }
                 }
             }
         }
+    }
+
+    public int getPinNumber() {
+        return pinNumber;
+    }
+
+    public PinState getState() {
+        return state;
     }
 
     public PinGroup getPinGroup() {
@@ -97,7 +85,11 @@ public class Pin {
         this.pinGroup = pinGroup;
     }
 
+    public boolean isOutput() {
+        return isOutput;
+    }
+
     public boolean isConnected() {
-        return pinGroup.getPins().size() > 1;
+        return pinGroup != null && pinGroup.getPins().size() > 1;
     }
 }

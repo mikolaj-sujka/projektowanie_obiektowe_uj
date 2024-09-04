@@ -52,7 +52,7 @@ public class Component7434 extends Component {
             Pin input = pins.get(pair[0]);
             Pin output = pins.get(pair[1]);
 
-            // Sprawdzenie czy piny istnieją, aby uniknąć NullPointerException
+            // Sprawdzenie, czy piny istnieją, aby uniknąć NullPointerException
             if (input != null && output != null) {
                 if (input.getState() == PinState.UNKNOWN) {
                     output.setState(PinState.UNKNOWN);

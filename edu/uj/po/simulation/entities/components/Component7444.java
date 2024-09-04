@@ -51,19 +51,29 @@ public class Component7444 extends Component {
             grayValue |= 1 << 1; // C = 1
         }
         if (pins.get(12).getState() == PinState.HIGH) {
-            grayValue |= 1 << 0; // D = 1
+            grayValue |= 1; // D = 1
         }
 
-        // Ustawienie wszystkich wyjść na HIGH
+        int binaryValue = grayToBinary(grayValue);
+
+        // Ustawienie wszystkich wyjść na HIGH, pomijając pin 8
         for (int i = 1; i <= 11; i++) {
-            if (i != 8) { // Pin 8 jest nieużywany, należy go pominąć
+            if (i != 8) {
                 pins.get(i).setState(PinState.HIGH);
             }
         }
 
         // Ustawienie odpowiedniego wyjścia na LOW
-        if (grayValue >= 0 && grayValue <= 9) {
-            pins.get(grayValue + 1).setState(PinState.LOW); // Piny Y0-Y9 (pomijamy pin 8)
+        if (binaryValue >= 0 && binaryValue <= 9) {
+            pins.get(binaryValue + 1).setState(PinState.LOW); // Piny Y0-Y9 (pomijamy pin 8)
         }
+    }
+
+    private int grayToBinary(int gray) {
+        int binary = gray;
+        while ((gray >>= 1) != 0) {
+            binary ^= gray;
+        }
+        return binary;
     }
 }

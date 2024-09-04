@@ -10,7 +10,7 @@ public class TestChip7431Logic {
     public void chip7431ComponentLogic() throws UnknownChip, UnknownPin, ShortCircuitException, UnknownComponent, UnknownStateException, UnknownStateException {
         Simulation simulation = new Simulation();
 
-        int inputStrip = simulation.createInputPinHeader(9);
+        int inputStrip = simulation.createInputPinHeader(8);
         int chip = simulation.createChip(7431);
         int outputStrip = simulation.createOutputPinHeader(6);
 
@@ -19,11 +19,10 @@ public class TestChip7431Logic {
         simulation.connect(inputStrip, 2, chip, 3);  // 2A (BUFOR)
         simulation.connect(inputStrip, 3, chip, 5);  // 3A (NAND)
         simulation.connect(inputStrip, 4, chip, 6);  // 3B (NAND)
-        simulation.connect(inputStrip, 5, chip, 11); // 3C (NAND)
-        simulation.connect(inputStrip, 6, chip, 13); // 4A (BUFOR)
-        simulation.connect(inputStrip, 7, chip, 15); // 5A (NOT)
-        simulation.connect(inputStrip, 8, chip, 9);  // 6A (NAND)
-        simulation.connect(inputStrip, 9, chip, 10); // 6B (NAND)
+        simulation.connect(inputStrip, 5, chip, 13); // 4A (BUFOR)
+        simulation.connect(inputStrip, 6, chip, 15); // 5A (NOT)
+        simulation.connect(inputStrip, 7, chip, 9);  // 6A (NAND)
+        simulation.connect(inputStrip, 8, chip, 10); // 6B (NAND)
 
         // Wyjścia
         simulation.connect(outputStrip, 1, chip, 2);  // 1Y (NOT)
@@ -31,7 +30,7 @@ public class TestChip7431Logic {
         simulation.connect(outputStrip, 3, chip, 7);  // 3Y (NAND)
         simulation.connect(outputStrip, 4, chip, 12); // 4Y (BUFOR)
         simulation.connect(outputStrip, 5, chip, 14); // 5Y (NOT)
-        simulation.connect(outputStrip, 6, chip, 8);  // 6Y (NAND)
+        simulation.connect(outputStrip, 6, chip, 9);  // 6Y (NAND)
 
         // Inicjalizacja początkowych stanów
         Set<ComponentPinState> states = new HashSet<>();

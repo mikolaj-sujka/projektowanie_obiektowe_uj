@@ -7,7 +7,7 @@ import java.util.*;
 public class TestChip7444Logic {
 
     @Test
-    public void chip7442ComponentLogic() throws UnknownChip, UnknownPin, ShortCircuitException, UnknownComponent, UnknownStateException {
+    public void chip7444ComponentLogic() throws UnknownChip, UnknownPin, ShortCircuitException, UnknownComponent, UnknownStateException {
         Simulation simulation = new Simulation();
 
         int inputStrip = simulation.createInputPinHeader(4);
@@ -53,7 +53,6 @@ public class TestChip7444Logic {
                 if (j == i) {
                     Assert.assertEquals(PinState.LOW ,list.get(j).state());
                 } else {
-//                    if ()
                     Assert.assertEquals(PinState.HIGH ,list.get(j).state());
                 }
             }

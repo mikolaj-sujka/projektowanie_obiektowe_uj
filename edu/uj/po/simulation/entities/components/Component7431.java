@@ -46,17 +46,21 @@ public class Component7431 extends Component {
     public void performLogic() {
         performNotGate(1, 2);   // NOT: 1A -> 1Y
         performBufferGate(3, 4); // BUFOR: 2A -> 2Y
-        performNandGate(5, 6, 11, 7); // NAND: 3A, 3B, 3C -> 3Y
+        performNandGate(5, 6, 7); // NAND: 3A, 3B -> 3Y
 
         performBufferGate(13, 12); // BUFOR: 4A -> 4Y
         performNotGate(15, 14);  // NOT: 5A -> 5Y
 
-        performNandGate(9, 10, 8); // NAND: 6A, 6B -> 6Y
+        performNandGate(11, 10, 9); // NAND: 6A, 6B -> 6Y
     }
 
     private void performNotGate(int inputPin, int outputPin) {
         Pin input = pins.get(inputPin);
         Pin output = pins.get(outputPin);
+
+        if (input == null || output == null) {
+            return;  // Sprawdzenie, czy pin istnieje, żeby uniknąć NullPointerException
+        }
 
         if (input.getState() == PinState.UNKNOWN) {
             output.setState(PinState.UNKNOWN);
@@ -71,6 +75,10 @@ public class Component7431 extends Component {
         Pin input = pins.get(inputPin);
         Pin output = pins.get(outputPin);
 
+        if (input == null || output == null) {
+            return;  // Sprawdzenie, czy pin istnieje, żeby uniknąć NullPointerException
+        }
+
         if (input.getState() == PinState.UNKNOWN) {
             output.setState(PinState.UNKNOWN);
         } else {
@@ -78,25 +86,14 @@ public class Component7431 extends Component {
         }
     }
 
-    private void performNandGate(int inputPinA, int inputPinB, int inputPinC, int outputPin) {
-        Pin inputA = pins.get(inputPinA);
-        Pin inputB = pins.get(inputPinB);
-        Pin inputC = pins.get(inputPinC);
-        Pin output = pins.get(outputPin);
-
-        if (inputA.getState() == PinState.UNKNOWN || inputB.getState() == PinState.UNKNOWN || inputC.getState() == PinState.UNKNOWN) {
-            output.setState(PinState.UNKNOWN);
-        } else if (inputA.getState() == PinState.HIGH && inputB.getState() == PinState.HIGH && inputC.getState() == PinState.HIGH) {
-            output.setState(PinState.LOW);
-        } else {
-            output.setState(PinState.HIGH);
-        }
-    }
-
     private void performNandGate(int inputPinA, int inputPinB, int outputPin) {
         Pin inputA = pins.get(inputPinA);
         Pin inputB = pins.get(inputPinB);
         Pin output = pins.get(outputPin);
+
+        if (inputA == null || inputB == null || output == null) {
+            return;  // Sprawdzenie, czy pin istnieje, żeby uniknąć NullPointerException
+        }
 
         if (inputA.getState() == PinState.UNKNOWN || inputB.getState() == PinState.UNKNOWN) {
             output.setState(PinState.UNKNOWN);

@@ -24,13 +24,15 @@ public class SimulationService {
                 throw new UnknownStateException(state);
             }
 
-            if (state.state() == PinState.UNKNOWN) {
+            if (state.state() == PinState.UNKNOWN && !pin.isConnected()) {
                 throw new UnknownStateException(state);
             }
 
             pin.setState(state.state());
 
-            updateComponentStatesForPinGroup(pin);
+            if (pin.isConnected()) {
+                updateComponentStatesForPinGroup(pin);
+            }
         }
 
         for (Component component : components.values()) {
@@ -112,7 +114,7 @@ public class SimulationService {
         return -1; // lub rzucić wyjątek, jeśli pin nie jest przypisany do żadnego komponentu
     }
 
-    private Component getComponentById(int id) {
+    public Component getComponentById(int id) {
         return components.get(id);
     }
 

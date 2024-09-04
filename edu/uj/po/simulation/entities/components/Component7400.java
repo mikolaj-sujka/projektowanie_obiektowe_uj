@@ -28,24 +28,29 @@ public class Component7400 extends Component {
         pins.put(5, new Pin(5, false));  // Wejście B2
         pins.put(6, new Pin(6, true));   // Wyjście Y2
 
-        pins.put(9, new Pin(9, false)); // Wejscie A3
-        pins.put(10, new Pin(10, false)); // Wejscia B3
-        pins.put(8, new Pin(8, true)); // Wejscie Y3
+        pins.put(9, new Pin(9, false));  // Wejście A3
+        pins.put(10, new Pin(10, false)); // Wejście B3
+        pins.put(8, new Pin(8, true));   // Wyjście Y3
 
-        pins.put(11, new Pin(11, true)); // Wyjscie Y4
-        pins.put(12, new Pin(12, true)); // Wejscia A4
-        pins.put(13, new Pin(13, true)); // Wejscia B4
+        pins.put(12, new Pin(12, false)); // Wejście A4
+        pins.put(13, new Pin(13, false)); // Wejście B4
+        pins.put(11, new Pin(11, true));  // Wyjście Y4
 
         return pins;
     }
 
     @Override
     public void performLogic() {
-        performLogicForGate(1, 2, 3);  // Pierwsza bramka NAND (1A, 1B -> 1Y)
-        performLogicForGate(4, 5, 6);  // Druga bramka NAND (2A, 2B -> 2Y)
-        performLogicForGate(9, 10, 8); // Trzecia bramka NAND (3A, 3B -> 3Y)
-        performLogicForGate(12, 13, 11); // Czwarta bramka NAND (4A, 4B -> 4Y)
+        // Pierwsza bramka NAND (A1, B1 -> Y1)
+        performLogicForGate(1, 2, 3);
+        // Druga bramka NAND (A2, B2 -> Y2)
+        performLogicForGate(4, 5, 6);
+        // Trzecia bramka NAND (A3, B3 -> Y3)
+        performLogicForGate(9, 10, 8);
+        // Czwarta bramka NAND (A4, B4 -> Y4)
+        performLogicForGate(12, 13, 11);
     }
+
     private void performLogicForGate(int inputPinA, int inputPinB, int outputPin) {
         Pin inputA = pins.get(inputPinA);
         Pin inputB = pins.get(inputPinB);
@@ -54,9 +59,9 @@ public class Component7400 extends Component {
         if (inputA.getState() == PinState.UNKNOWN || inputB.getState() == PinState.UNKNOWN) {
             output.setState(PinState.UNKNOWN);
         } else if (inputA.getState() == PinState.HIGH && inputB.getState() == PinState.HIGH) {
-            output.setState(PinState.LOW); // Logika NAND: jeśli oba wejścia są HIGH, wyjście jest LOW
+            output.setState(PinState.LOW);  // Logika NAND
         } else {
-            output.setState(PinState.HIGH); // W przeciwnym razie wyjście jest HIGH
+            output.setState(PinState.HIGH); // Inaczej wyjście jest HIGH
         }
     }
 

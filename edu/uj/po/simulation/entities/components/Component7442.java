@@ -54,7 +54,7 @@ public class Component7442 extends Component {
             value |= 1 << 3; // D = 1
         }
 
-        // Ustawienie wszystkich wyjść na HIGH
+        // Ustawienie wszystkich wyjść na HIGH, pomijając pin 8
         for (int i = 1; i <= 11; i++) {
             if (i != 8) { // Pin 8 jest nieużywany, należy go pominąć
                 pins.get(i).setState(PinState.HIGH);

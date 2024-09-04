@@ -1,6 +1,9 @@
 import edu.uj.po.simulation.interfaces.*;
+import edu.uj.po.simulation.services.OptimizationService;
+import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,15 +39,6 @@ public class TestOptimisation {
         simulation.connect(0, 1, 5, 13);
         //output - 7444
         simulation.connect(6, 1, 5, 1);
-//        simulation.connect(6, 2, 5, 2);
-//        simulation.connect(6, 3, 5, 3);
-//        simulation.connect(6, 4, 5, 4);
-//        simulation.connect(6, 5, 5, 5);
-//        simulation.connect(6, 6, 5, 6);
-//        simulation.connect(6, 7, 5, 7);
-//        simulation.connect(6, 8, 5, 9);
-//        simulation.connect(6, 9, 5, 10);
-//        simulation.connect(6, 10, 5, 11);
 
         simulation.connect(0, 1, 3, 5);
         simulation.connect(0, 2, 1, 2);
