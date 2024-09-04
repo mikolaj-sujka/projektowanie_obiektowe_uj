@@ -38,32 +38,32 @@ public class Component7444 extends Component {
 
     @Override
     public void performLogic() {
-        // Dekodowanie kodu GRAY'a na 1 z 10
-        int grayCode = 0;
-        for (int i = 1; i <= 4; i++) {
-            Pin input = pins.get(i);
-            if (input.getState() == PinState.UNKNOWN) {
-                pins.values().forEach(pin -> pin.setState(PinState.UNKNOWN));
-                return;
+        int grayValue = 0;
+
+        // Sprawdzanie stanu wejść i obliczanie wartości w kodzie GRAY'a
+        if (pins.get(15).getState() == PinState.HIGH) {
+            grayValue |= 1 << 3; // A = 1
+        }
+        if (pins.get(14).getState() == PinState.HIGH) {
+            grayValue |= 1 << 2; // B = 1
+        }
+        if (pins.get(13).getState() == PinState.HIGH) {
+            grayValue |= 1 << 1; // C = 1
+        }
+        if (pins.get(12).getState() == PinState.HIGH) {
+            grayValue |= 1 << 0; // D = 1
+        }
+
+        // Ustawienie wszystkich wyjść na HIGH
+        for (int i = 1; i <= 11; i++) {
+            if (i != 8) { // Pin 8 jest nieużywany, należy go pominąć
+                pins.get(i).setState(PinState.HIGH);
             }
-            if (input.getState() == PinState.HIGH) {
-                grayCode |= 1 << (i - 1);
-            }
         }
 
-        int binaryCode = grayToBinary(grayCode);
-
-        pins.values().forEach(pin -> pin.setState(PinState.LOW));
-        if (binaryCode >= 0 && binaryCode <= 9) {
-            pins.get(5 + binaryCode).setState(PinState.HIGH);
+        // Ustawienie odpowiedniego wyjścia na LOW
+        if (grayValue >= 0 && grayValue <= 9) {
+            pins.get(grayValue + 1).setState(PinState.LOW); // Piny Y0-Y9 (pomijamy pin 8)
         }
-    }
-
-    private int grayToBinary(int gray) {
-        int binary = 0;
-        for (; gray != 0; gray = gray >> 1) {
-            binary ^= gray;
-        }
-        return binary;
     }
 }

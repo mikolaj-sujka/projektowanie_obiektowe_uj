@@ -55,16 +55,36 @@ public class Pin {
             this.pinGroup = newGroup;
             otherPin.setPinGroup(newGroup);
         } else if (this.pinGroup == null) {
-            otherPin.getPinGroup().addPin(this);
-            this.pinGroup = otherPin.getPinGroup();
+            // Dodanie this do grupy otherPin
+            if (!otherPin.getPinGroup().getPins().contains(this)) {
+                otherPin.getPinGroup().addPin(this);
+                this.pinGroup = otherPin.getPinGroup();
+            }
         } else if (otherPin.getPinGroup() == null) {
-            this.pinGroup.addPin(otherPin);
-            otherPin.setPinGroup(this.pinGroup);
+            // Dodanie otherPin do grupy this
+            if (!this.pinGroup.getPins().contains(otherPin)) {
+                this.pinGroup.addPin(otherPin);
+                otherPin.setPinGroup(this.pinGroup);
+            }
         } else {
+            // Łączenie dwóch grup pinów
             PinGroup groupToMerge = otherPin.getPinGroup();
+
+            // Usuwanie duplikatów pinów oraz zapobieganie wielokrotnym pinom wyjściowym
             for (Pin pin : groupToMerge.getPins()) {
-                this.pinGroup.addPin(pin);
-                pin.setPinGroup(this.pinGroup);
+                if (!this.pinGroup.getPins().contains(pin)) {
+                    if (pin.isOutput()) {
+                        // Sprawdzenie, czy grupa już zawiera pin wyjściowy, jeśli tak, pomijamy
+                        boolean hasOutputPin = this.pinGroup.getPins().stream().anyMatch(Pin::isOutput);
+                        if (!hasOutputPin) {
+                            this.pinGroup.addPin(pin);
+                            pin.setPinGroup(this.pinGroup);
+                        }
+                    } else {
+                        this.pinGroup.addPin(pin);
+                        pin.setPinGroup(this.pinGroup);
+                    }
+                }
             }
         }
     }

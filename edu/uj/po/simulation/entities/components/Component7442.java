@@ -38,22 +38,37 @@ public class Component7442 extends Component {
 
     @Override
     public void performLogic() {
-        // Dekodowanie BCD na kod 1 z 10
         int value = 0;
-        for (int i = 1; i <= 4; i++) {
-            Pin input = pins.get(i);
-            if (input.getState() == PinState.UNKNOWN) {
-                pins.values().forEach(pin -> pin.setState(PinState.UNKNOWN));
-                return;
-            }
-            if (input.getState() == PinState.HIGH) {
-                value |= 1 << (i - 1);
+
+        // Sprawdzanie stanu wejść i obliczanie wartości binarnej
+        if (pins.get(15).getState() == PinState.HIGH) {
+            value |= 1 << 0; // A = 1
+        }
+        if (pins.get(14).getState() == PinState.HIGH) {
+            value |= 1 << 1; // B = 1
+        }
+        if (pins.get(13).getState() == PinState.HIGH) {
+            value |= 1 << 2; // C = 1
+        }
+        if (pins.get(12).getState() == PinState.HIGH) {
+            value |= 1 << 3; // D = 1
+        }
+
+        // Ustawienie wszystkich wyjść na HIGH
+        for (int i = 1; i <= 11; i++) {
+            if (i != 8) { // Pin 8 jest nieużywany, należy go pominąć
+                pins.get(i).setState(PinState.HIGH);
             }
         }
 
-        pins.values().forEach(pin -> pin.setState(PinState.LOW));
+        // Jeśli wartość jest w zakresie 0-9, ustaw odpowiednie wyjście na LOW
         if (value >= 0 && value <= 9) {
-            pins.get(5 + value).setState(PinState.HIGH);
+            if (value >= 7) {
+                // Piny są przesunięte po pinie 7
+                pins.get(value + 2).setState(PinState.LOW); // Przesunięcie o +2 zamiast +1, aby ominąć pin 8
+            } else {
+                pins.get(value + 1).setState(PinState.LOW); // Y0-Y6 są bezpośrednio zmapowane
+            }
         }
     }
 }

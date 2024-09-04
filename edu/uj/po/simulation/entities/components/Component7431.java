@@ -51,7 +51,7 @@ public class Component7431 extends Component {
         performBufferGate(13, 12); // BUFOR: 4A -> 4Y
         performNotGate(15, 14);  // NOT: 5A -> 5Y
 
-        performNandGate(9, 10, 11, 8); // NAND: 6A, 6B -> 6Y
+        performNandGate(9, 10, 8); // NAND: 6A, 6B -> 6Y
     }
 
     private void performNotGate(int inputPin, int outputPin) {
