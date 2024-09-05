@@ -1,9 +1,13 @@
 package edu.uj.po.simulation.extensions;
 
 
+import edu.uj.po.simulation.entities.Pin;
 import edu.uj.po.simulation.interfaces.UnknownChip;
 import edu.uj.po.simulation.entities.Component;
 import edu.uj.po.simulation.entities.components.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ComponentFactory implements IComponentFactory{
 
@@ -60,5 +64,27 @@ public class ComponentFactory implements IComponentFactory{
         }
         component.setId(componentId);
         return component;
+    }
+
+    public Component createOutputPinHeader(int size, int componentId) {
+        Component pinHeader = new Component(componentId, createPins(size, true), true);
+        pinHeader.setId(componentId);
+        return pinHeader;
+    }
+
+    public Component createInputPinHeader(int size, int componentId) {
+        Component pinHeader = new Component(componentId, createPins(size, false), true);
+        pinHeader.setId(componentId);
+        return pinHeader;
+    }
+
+    private static Map<Integer, Pin> createPins(int size, boolean isOutput) {
+        Map<Integer, Pin> pins = new HashMap<>();
+
+        for (int i = 1; i <= size; i++) {
+            pins.put(i, new Pin(i, isOutput));
+        }
+
+        return pins;
     }
 }

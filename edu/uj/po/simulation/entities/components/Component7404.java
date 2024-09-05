@@ -12,7 +12,7 @@ import java.util.Map;
 public class Component7404 extends Component {
 
     public Component7404(int id) {
-        super(id, createPins());
+        super(id, createPins(), false);
     }
 
     private static Map<Integer, Pin> createPins() {

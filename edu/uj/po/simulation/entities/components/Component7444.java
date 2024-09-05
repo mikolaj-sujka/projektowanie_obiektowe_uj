@@ -24,7 +24,7 @@ public class Component7444 extends Component {
     );
 
     public Component7444(int id) {
-        super(id, createPins());
+        super(id, createPins(), false);
     }
 
     private static Map<Integer, Pin> createPins() {

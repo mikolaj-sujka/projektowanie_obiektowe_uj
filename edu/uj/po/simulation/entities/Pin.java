@@ -2,6 +2,7 @@ package edu.uj.po.simulation.entities;
 
 
 import edu.uj.po.simulation.interfaces.PinState;
+import edu.uj.po.simulation.interfaces.ShortCircuitException;
 
 public class Pin {
     private final int pinNumber;
@@ -9,6 +10,7 @@ public class Pin {
     private final boolean isOutput;
     private PinGroup pinGroup;
     private boolean isUpdatingState;
+    private boolean isPinHeaderPin = false;
 
     public Pin(int pinNumber, boolean isOutput) {
         this.pinNumber = pinNumber;
@@ -18,40 +20,54 @@ public class Pin {
         this.pinGroup = null;
     }
 
-    public void connect(Pin otherPin) {
-        // Sprawdzenie, czy piny są już połączone w tej samej grupie
+    public void connect(Pin otherPin) throws ShortCircuitException {
         if (this.pinGroup != null && this.pinGroup == otherPin.getPinGroup()) {
             return;
         }
 
-        // Oba piny nie są połączone z żadną grupą
         if (this.pinGroup == null && otherPin.getPinGroup() == null) {
             PinGroup newGroup = new PinGroup();
+
+            if (this.isOutput() && otherPin.isOutput() && !this.isPinHeaderPin && !otherPin.isPinHeaderPin) {
+                throw new ShortCircuitException();
+            }
+
             newGroup.addPin(this);
             newGroup.addPin(otherPin);
             this.pinGroup = newGroup;
             otherPin.setPinGroup(newGroup);
-        } else if (this.pinGroup == null) {
-            // Dodanie this do grupy otherPin
-            if (!otherPin.getPinGroup().getPins().contains(this)) {
-                otherPin.getPinGroup().addPin(this);
-                this.pinGroup = otherPin.getPinGroup();
+        }
+        else if (this.pinGroup == null && otherPin.getPinGroup() != null) {
+            if (this.isOutput() && otherPin.getPinGroup().hasOutputPin() && !this.isPinHeaderPin) {
+                throw new ShortCircuitException();
             }
-        } else if (otherPin.getPinGroup() == null) {
-            // Dodanie otherPin do grupy this
-            if (!this.pinGroup.getPins().contains(otherPin)) {
-                this.pinGroup.addPin(otherPin);
-                otherPin.setPinGroup(this.pinGroup);
+
+            otherPin.getPinGroup().addPin(this);
+            this.pinGroup = otherPin.getPinGroup();
+        }
+        else if (otherPin.getPinGroup() == null && this.pinGroup != null) {
+            if (otherPin.isOutput() && this.pinGroup.hasOutputPin() && !otherPin.isPinHeaderPin) {
+                throw new ShortCircuitException();
             }
-        } else {
-            // Łączenie dwóch grup pinów (scalanie grup)
+
+            this.pinGroup.addPin(otherPin);
+            otherPin.setPinGroup(this.pinGroup);
+        }
+        else {
             PinGroup groupToMerge = otherPin.getPinGroup();
+
+            if (this.pinGroup.hasOutputPin() && groupToMerge.hasOutputPin() && !this.isPinHeaderPin && !otherPin.isPinHeaderPin) {
+                throw new ShortCircuitException();
+            }
+
             for (Pin pin : groupToMerge.getPins()) {
                 if (!this.pinGroup.getPins().contains(pin)) {
                     this.pinGroup.addPin(pin);
                     pin.setPinGroup(this.pinGroup);
                 }
             }
+
+            groupToMerge.clearPins();
         }
     }
 
@@ -90,5 +106,9 @@ public class Pin {
 
     public boolean isConnected() {
         return pinGroup != null && pinGroup.getPins().size() > 1;
+    }
+
+    public void setIsPinHeaderPin(boolean isPinHeaderPin) {
+        this.isPinHeaderPin = isPinHeaderPin;
     }
 }

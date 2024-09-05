@@ -7,12 +7,10 @@ public class PinGroup {
     private static int nextGroupId = 1;
     private final int groupId;
     private final Set<Pin> pins;
-    private boolean hasOutput;
 
     public PinGroup() {
         this.groupId = nextGroupId++;
         this.pins = new HashSet<>();
-        this.hasOutput = false;
     }
 
     public int getGroupId() {
@@ -23,21 +21,15 @@ public class PinGroup {
         return pins;
     }
 
-    public boolean hasOutput() {
-        return hasOutput;
-    }
-
     public void addPin(Pin pin) {
         pins.add(pin);
-        if (pin.isOutput()) {
-            this.hasOutput = true;
-        }
     }
 
-    public void removePin(Pin pin) {
-        pins.remove(pin);
-        if (pin.isOutput() && pins.stream().noneMatch(Pin::isOutput)) {
-            this.hasOutput = false;
-        }
+    public boolean hasOutputPin() {
+        return pins.stream().anyMatch(Pin::isOutput);
+    }
+
+    public void clearPins() {
+        pins.clear();
     }
 }

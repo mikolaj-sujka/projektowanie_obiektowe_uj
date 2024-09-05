@@ -44,16 +44,14 @@ public class SimulationService {
             throws UnknownStateException {
         Map<Integer, Set<ComponentPinState>> simulationResults = new HashMap<>();
 
-        stationaryState(initialStates); // Ustawienia początkowe dla wszystkich komponentów
+        stationaryState(initialStates);
 
         for (int tick = 0; tick <= ticks; tick++) {
             Queue<ComponentPinState> nextStatesQueue = new LinkedList<>();
 
-            // Wykonanie logiki dla każdego komponentu
             for (Component component : components.values()) {
                 component.performLogic();
 
-                // Przeglądanie pinów wyjściowych
                 for (Pin pin : component.getPins().values()) {
                     if (pin.isOutput() && pin.isConnected()) {
                         nextStatesQueue.add(new ComponentPinState(component.getId(), pin.getPinNumber(), pin.getState()));
@@ -67,17 +65,14 @@ public class SimulationService {
                 Component component = getComponentById(state.componentId());
                 Pin outputPin = component.getPin(state.pinId());
 
-                // Sprawdzamy, czy outputPin faktycznie jest pinem wyjściowym, jeśli nie, pomijamy
                 if (!outputPin.isOutput()) {
                     continue;
                 }
 
-                // Dodajemy do currentTickStates tylko, jeśli komponent to pinHeaderComponent
-                if (component instanceof PinHeaderComponent) {
+                if (component.isPinHeader()) {
                     currentTickStates.add(new ComponentPinState(component.getId(), outputPin.getPinNumber(), outputPin.getState()));
                 }
 
-                // Propagacja stanu na wszystkie połączone piny
                 for (Pin connectedPin : outputPin.getPinGroup().getPins()) {
                     if (!connectedPin.equals(outputPin)) {
                         connectedPin.setState(outputPin.getState());
@@ -85,7 +80,6 @@ public class SimulationService {
                 }
             }
 
-            // Jeśli currentTickStates jest puste, nie ma zmiany w symulacji - używamy stanu z poprzedniego cyklu
             if (currentTickStates.isEmpty()) {
                 currentTickStates = simulationResults.getOrDefault(tick - 1, new HashSet<>());
             }
@@ -105,15 +99,6 @@ public class SimulationService {
         }
     }
 
-    private int getComponentIdFromPin(Pin pin) {
-        for (Component component : components.values()) {
-            if (component.getPins().containsValue(pin)) {
-                return component.getId();
-            }
-        }
-        return -1; // lub rzucić wyjątek, jeśli pin nie jest przypisany do żadnego komponentu
-    }
-
     public Component getComponentById(int id) {
         return components.get(id);
     }
@@ -130,11 +115,9 @@ public class SimulationService {
         components.put(component.getId(), component);
     }
 
-    // Funkcja aktualizująca stany pinów w grupie oraz komponentów, do których należą
     private void updateComponentStatesForPinGroup(Pin pin) {
         if (pin.getPinGroup() != null) {
             for (Pin connectedPin : pin.getPinGroup().getPins()) {
-                // Znajdź komponent, do którego należy connectedPin
                 Component connectedComponent = getComponentContainingPin(connectedPin);
                 if (connectedComponent != null) {
                     connectedComponent.getPin(connectedPin.getPinNumber()).setState(connectedPin.getState());
@@ -143,7 +126,6 @@ public class SimulationService {
         }
     }
 
-    // Metoda znajdująca komponent, do którego należy dany pin
     private Component getComponentContainingPin(Pin pin) {
         for (Component component : components.values()) {
             if (component.getPins().containsValue(pin)) {
