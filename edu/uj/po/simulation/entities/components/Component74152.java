@@ -1,82 +1,67 @@
 package edu.uj.po.simulation.entities.components;
 
-
-import edu.uj.po.simulation.interfaces.ComponentPinState;
-import edu.uj.po.simulation.interfaces.PinState;
-import edu.uj.po.simulation.entities.Component;
-import edu.uj.po.simulation.entities.Pin;
-import edu.uj.po.simulation.interfaces.UnknownStateException;
-
-import java.util.HashMap;
-import java.util.Map;
+import edu.uj.po.simulation.entities.*;
+import edu.uj.po.simulation.interfaces.*;
+import java.util.List;
 
 public class Component74152 extends Component {
 
     public Component74152(int id) {
-        super(id, createPins(), false);
+        super(id, false, createInputPins(), createOutputPins());
     }
 
-    private static Map<Integer, Pin> createPins() {
-        Map<Integer, Pin> pins = new HashMap<>();
+    private static List<Integer> createOutputPins() {
+        return List.of(6);
+    }
 
-        // Tworzymy piny wejściowe D0 - D7
-        for (int i = 1; i <= 8; i++) {
-            pins.put(i, new Pin(i, false)); // Wejścia D0 - D7
-        }
-
-        // Tworzymy piny dla sygnałów sterujących S1, S2, S3 oraz G (Enable)
-        pins.put(9, new Pin(9, false));  // Wejście S1
-        pins.put(10, new Pin(10, false)); // Wejście S2
-        pins.put(11, new Pin(11, false)); // Wejście S3
-        pins.put(12, new Pin(12, false)); // Wejście G (Enable)
-
-        // Wyjście Y
-        pins.put(13, new Pin(13, true));  // Wyjście Y
-
-        return pins;
+    private static List<Integer> createInputPins() {
+        return List.of(1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13);
     }
 
     @Override
     public void performLogic() throws UnknownStateException {
-        Pin S1 = pins.get(9);
-        Pin S2 = pins.get(10);
-        Pin S3 = pins.get(11);
-        Pin G = pins.get(12);
-        Pin Y = pins.get(13);
+        Pin A = pins.get(10);
+        Pin B = pins.get(9);
+        Pin C = pins.get(8);
+        Pin W = pins.get(6);
 
-        // Jeśli G (Enable) jest HIGH, wyjście Y jest zawsze LOW
-        if (G.getState() == PinState.HIGH) {
-            Y.setState(PinState.LOW);
-            return;
+        if (A.getState() == PinState.UNKNOWN) {
+            W.setState(PinState.UNKNOWN);
+            throw new UnknownStateException(new ComponentPinState(getId(), A.getPinNumber(), A.getState()));
+        }
+        if (B.getState() == PinState.UNKNOWN) {
+            W.setState(PinState.UNKNOWN);
+            throw new UnknownStateException(new ComponentPinState(getId(), B.getPinNumber(), B.getState()));
+        }
+        if (C.getState() == PinState.UNKNOWN) {
+            W.setState(PinState.UNKNOWN);
+            throw new UnknownStateException(new ComponentPinState(getId(), C.getPinNumber(), C.getState()));
         }
 
-        // Sprawdzamy, czy S1, S2, S3 są w stanie UNKNOWN
-        if (S1.getState() == PinState.UNKNOWN) {
-            Y.setState(PinState.UNKNOWN);
-            throw new UnknownStateException(new ComponentPinState(getId(), S1.getPinNumber(), S1.getState()));
-        }
-        if (S2.getState() == PinState.UNKNOWN) {
-            Y.setState(PinState.UNKNOWN);
-            throw new UnknownStateException(new ComponentPinState(getId(), S2.getPinNumber(), S2.getState()));
-        }
-        if (S3.getState() == PinState.UNKNOWN) {
-            Y.setState(PinState.UNKNOWN);
-            throw new UnknownStateException(new ComponentPinState(getId(), S3.getPinNumber(), S3.getState()));
-        }
+        int index = (booleanToInt(C.getState()) << 2) | (booleanToInt(B.getState()) << 1) | booleanToInt(A.getState());
 
-        // Obliczamy indeks na podstawie stanów S1, S2, S3
-        int index = (booleanToInt(S3.getState()) << 2) | (booleanToInt(S2.getState()) << 1) | booleanToInt(S1.getState());
+        Pin selectedInput = getSelectedInput(index);
 
-        // Sprawdzamy stan wybranego wejścia D0-D7
-        Pin selectedInput = pins.get(1 + index);
-
-        // Jeśli wybrane wejście jest w stanie UNKNOWN, ustawiamy wyjście Y na UNKNOWN
         if (selectedInput.getState() == PinState.UNKNOWN) {
-            Y.setState(PinState.UNKNOWN);
+            W.setState(PinState.UNKNOWN);
             throw new UnknownStateException(new ComponentPinState(getId(), selectedInput.getPinNumber(), selectedInput.getState()));
         } else {
-            // Ustawiamy wyjście Y na stan wybranego wejścia
-            Y.setState(selectedInput.getState());
+            PinState outputState = selectedInput.getState() == PinState.HIGH ? PinState.LOW : PinState.HIGH;
+            W.setState(outputState);
+        }
+    }
+
+    private Pin getSelectedInput(int index) {
+        switch (index) {
+            case 0: return pins.get(5); // D0
+            case 1: return pins.get(4); // D1
+            case 2: return pins.get(3); // D2
+            case 3: return pins.get(2); // D3
+            case 4: return pins.get(1); // D4
+            case 5: return pins.get(13); // D5
+            case 6: return pins.get(12); // D6
+            case 7: return pins.get(11); // D7
+            default: throw new IllegalStateException("Unexpected index: " + index);
         }
     }
 

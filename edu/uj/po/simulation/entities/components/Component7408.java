@@ -1,40 +1,20 @@
 package edu.uj.po.simulation.entities.components;
 
-
 import edu.uj.po.simulation.interfaces.PinState;
-import edu.uj.po.simulation.entities.Component;
-import edu.uj.po.simulation.entities.Pin;
-
-import java.util.HashMap;
-import java.util.Map;
+import edu.uj.po.simulation.entities.*;
+import java.util.List;
 
 public class Component7408 extends Component {
     public Component7408(int id) {
-        super(id, createPins(), false);
+        super(id, false, createInputPins(), createOutputPins());
     }
 
-    private static Map<Integer, Pin> createPins() {
-        Map<Integer, Pin> pins = new HashMap<>();
+    private static List<Integer> createOutputPins() {
+        return List.of(3, 6, 8, 11);
+    }
 
-        // Definicja pinów dla układu 7408 (4x AND)
-        pins.put(1, new Pin(1, false));  // Wejście 1A
-        pins.put(2, new Pin(2, false));  // Wejście 1B
-        pins.put(3, new Pin(3, true));   // Wyjście 1Y
-
-        pins.put(4, new Pin(4, false));  // Wejście 2A
-        pins.put(5, new Pin(5, false));  // Wejście 2B
-        pins.put(6, new Pin(6, true));   // Wyjście 2Y
-
-        pins.put(8, new Pin(8, true));   // Wyjście 3Y
-        pins.put(9, new Pin(9, false));  // Wejście 3A
-        pins.put(10, new Pin(10, false)); // Wejście 3B
-
-        pins.put(11, new Pin(11, true)); // Wyjście 4Y
-        pins.put(12, new Pin(12, false)); // Wejście 4A
-        pins.put(13, new Pin(13, false)); // Wejście 4B
-
-        // Pomijamy Vcc (pin 14) i GND (pin 7)
-        return pins;
+    private static List<Integer> createInputPins() {
+        return List.of(1, 2, 4, 5, 9, 10, 12, 13);
     }
 
     @Override

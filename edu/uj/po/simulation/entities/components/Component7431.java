@@ -1,40 +1,21 @@
 package edu.uj.po.simulation.entities.components;
 
 import edu.uj.po.simulation.interfaces.PinState;
-import edu.uj.po.simulation.entities.Component;
-import edu.uj.po.simulation.entities.Pin;
-
-import java.util.HashMap;
-import java.util.Map;
+import edu.uj.po.simulation.entities.*;
+import java.util.List;
 
 public class Component7431 extends Component {
 
     public Component7431(int id) {
-        super(id, createPins(), false);
+        super(id, false, createInputPins(), createOutputPins());
     }
 
-    private static Map<Integer, Pin> createPins() {
-        Map<Integer, Pin> pins = new HashMap<>();
+    private static List<Integer> createOutputPins() {
+        return List.of(2, 4, 7, 9, 12, 14);
+    }
 
-        // Tworzenie pinów wejściowych
-        pins.put(1, new Pin(1, false));  // Wejście dla NOT (1A)
-        pins.put(3, new Pin(3, false));  // Wejście dla BUFOR (2A)
-        pins.put(5, new Pin(5, false));  // Wejście dla NAND (3A)
-        pins.put(6, new Pin(6, false));  // Wejście dla NAND (3B)
-        pins.put(11, new Pin(11, false));  // Wejście dla NAND (6A)
-        pins.put(10, new Pin(10, false));  // Wejście dla NAND (6B)
-        pins.put(13, new Pin(13, false));  // Wejście dla BUFOR (4A)
-        pins.put(15, new Pin(15, false));  // Wejście dla NOT (5A)
-
-        // Tworzenie pinów wyjściowych
-        pins.put(2, new Pin(2, true));  // Wyjście dla NOT (1Y)
-        pins.put(4, new Pin(4, true));  // Wyjście dla BUFOR (2Y)
-        pins.put(7, new Pin(7, true));  // Wyjście dla NAND (3Y)
-        pins.put(12, new Pin(12, true));  // Wyjście dla BUFOR (4Y)
-        pins.put(14, new Pin(14, true));  // Wyjście dla NOT (5Y)
-        pins.put(9, new Pin(9, true));   // Wyjście dla NAND (6Y)
-
-        return pins;
+    private static List<Integer> createInputPins() {
+        return List.of(1, 3, 5, 6, 10, 11 ,13, 15);
     }
 
     @Override

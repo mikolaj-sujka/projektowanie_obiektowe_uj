@@ -44,7 +44,18 @@ public class SimulationService {
             throws UnknownStateException {
         Map<Integer, Set<ComponentPinState>> simulationResults = new HashMap<>();
 
-        stationaryState(initialStates);
+        for (ComponentPinState initialState : initialStates) {
+            Component component = components.get(initialState.componentId());
+            if (component != null) {
+                try {
+                    component.setAndPropagatePinState(initialState.pinId(), initialState.state());
+                } catch (UnknownPin e) {
+                    throw new UnknownStateException(initialState);
+                }
+            } else {
+                throw new UnknownStateException(initialState);
+            }
+        }
 
         for (int tick = 0; tick <= ticks; tick++) {
             Queue<ComponentPinState> nextStatesQueue = new LinkedList<>();
@@ -62,7 +73,7 @@ public class SimulationService {
             Set<ComponentPinState> currentTickStates = new HashSet<>();
             while (!nextStatesQueue.isEmpty()) {
                 ComponentPinState state = nextStatesQueue.poll();
-                Component component = getComponentById(state.componentId());
+                Component component = components.get(state.componentId());
                 Pin outputPin = component.getPin(state.pinId());
 
                 if (!outputPin.isOutput()) {

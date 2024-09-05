@@ -1,38 +1,21 @@
 package edu.uj.po.simulation.entities.components;
 
-import edu.uj.po.simulation.entities.Component;
-import edu.uj.po.simulation.entities.Pin;
+import edu.uj.po.simulation.entities.*;
 import edu.uj.po.simulation.interfaces.PinState;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 public class Component7411 extends Component {
 
     public Component7411(int id) {
-        super(id, createPins(), false);
+        super(id,false, createInputPins(), createOutputPins());
     }
 
-    private static Map<Integer, Pin> createPins() {
-        Map<Integer, Pin> pins = new HashMap<>();
+    private static List<Integer> createOutputPins() {
+        return List.of(12, 6, 8);
+    }
 
-        // Definiowanie pinów
-        pins.put(1, new Pin(1, false));  // Wejście 1A
-        pins.put(2, new Pin(2, false));  // Wejście 1B
-        pins.put(13, new Pin(13, false));  // Wejście 1C
-        pins.put(12, new Pin(12, true));   // Wyjście 1Y
-
-        pins.put(3, new Pin(3, false));  // Wejście 2A
-        pins.put(4, new Pin(4, false));  // Wejście 2B
-        pins.put(5, new Pin(5, false));  // Wejście 2C
-        pins.put(6, new Pin(6, true));   // Wyjście 2Y
-
-        pins.put(9, new Pin(9, false));  // Wejście 3A
-        pins.put(10, new Pin(10, false)); // Wejście 3B
-        pins.put(11, new Pin(11, false)); // Wejście 3C
-        pins.put(8, new Pin(8, true));  // Wyjście 3Y
-
-        return pins;
+    private static List<Integer> createInputPins() {
+        return List.of(1, 2, 13, 5, 3, 4, 9, 10, 11);
     }
 
     @Override

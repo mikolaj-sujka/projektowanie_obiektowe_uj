@@ -4,20 +4,35 @@ package edu.uj.po.simulation.entities;
 import edu.uj.po.simulation.interfaces.PinState;
 import edu.uj.po.simulation.interfaces.UnknownPin;
 import edu.uj.po.simulation.interfaces.UnknownStateException;
-import edu.uj.po.simulation.observers.IPinStateObserver;
-
 import java.util.*;
 
 public class Component {
     protected int id;
     protected boolean isPinHeader; // Flaga, czy to jest listwa kołkowa
     protected Map<Integer, Pin> pins;
-    private List<IPinStateObserver> observers = new ArrayList<>();
 
-    public Component(int id, Map<Integer, Pin> pins, boolean isPinHeader) {
+    public Component(int id, boolean isPinHeader, List<Integer> inputPins, List<Integer> outputPins) {
         this.id = id;
-        this.pins = pins;
+        this.pins = createPins(inputPins, outputPins);
         this.isPinHeader = isPinHeader;
+    }
+
+    private Map<Integer, Pin> createPins(List<Integer> inputPins, List<Integer> outputPins) {
+        Map<Integer, Pin> pinMap = new HashMap<>();
+
+        if (!inputPins.isEmpty()) {
+            for (Integer pinNumber : inputPins) {
+                pinMap.put(pinNumber, new Pin(pinNumber, false));
+            }
+        }
+
+        if (!outputPins.isEmpty()) {
+            for (Integer pinNumber : outputPins) {
+                pinMap.put(pinNumber, new Pin(pinNumber, true));
+            }
+        }
+
+        return pinMap;
     }
 
     public int getId() {
@@ -52,7 +67,6 @@ public class Component {
 
         pin.setState(state);
 
-        // Propagacja stanu, jeśli pin jest połączony z innymi pinami
         if (pin.getPinGroup() != null) {
             for (Pin connectedPin : pin.getPinGroup().getPins()) {
                 if (!connectedPin.equals(pin)) {
