@@ -38,11 +38,11 @@ public class Component7404 extends Component {
         }
 
         if (input.getState() == PinState.UNKNOWN) {
-            output.setState(PinState.UNKNOWN);
+            output.setState(PinState.UNKNOWN);  // Przypadek, gdy stan wejściowy jest UNKNOWN
         } else if (input.getState() == PinState.HIGH) {
-            output.setState(PinState.LOW);
-        } else {
-            output.setState(PinState.HIGH);
+            output.setState(PinState.LOW);  // Inwersja HIGH -> LOW
+        } else if (input.getState() == PinState.LOW) {
+            output.setState(PinState.HIGH);  // Inwersja LOW -> HIGH
         }
     }
 }

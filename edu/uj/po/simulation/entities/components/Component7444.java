@@ -1,7 +1,7 @@
 package edu.uj.po.simulation.entities.components;
 
 import edu.uj.po.simulation.interfaces.PinState;
-import edu.uj.po.simulation.entities.Component;
+import edu.uj.po.simulation.entities.*;
 import java.util.List;
 import java.util.Map;
 
@@ -35,35 +35,51 @@ public class Component7444 extends Component {
     @Override
     public void performLogic() {
         for (int i = 12; i <= 15; i++) {
-            if (pins.get(i).getState() == PinState.UNKNOWN) {
+            Pin pin = pins.get(i);
+            if (pin == null || pin.getState() == PinState.UNKNOWN) {
                 setAllOutputsToUnknown();
                 return;
             }
         }
 
-        StringBuilder greyCode = new StringBuilder();
-        greyCode.append(pins.get(15).getState() == PinState.HIGH ? "1" : "0"); // A
-        greyCode.append(pins.get(14).getState() == PinState.HIGH ? "1" : "0"); // B
-        greyCode.append(pins.get(13).getState() == PinState.HIGH ? "1" : "0"); // C
-        greyCode.append(pins.get(12).getState() == PinState.HIGH ? "1" : "0"); // D
+        StringBuilder grayCode = new StringBuilder();
+        grayCode.append(pins.get(15).getState() == PinState.HIGH ? "1" : "0"); // A
+        grayCode.append(pins.get(14).getState() == PinState.HIGH ? "1" : "0"); // B
+        grayCode.append(pins.get(13).getState() == PinState.HIGH ? "1" : "0"); // C
+        grayCode.append(pins.get(12).getState() == PinState.HIGH ? "1" : "0"); // D
 
-        int decimalValue = greyCodeMap.getOrDefault(greyCode.toString(), -1);
+        int decimalValue = greyCodeMap.getOrDefault(grayCode.toString(), -1);
 
-        for (int i = 1; i <= 11; i++) {
-            if (i != 8) { // Pomijamy pin 8
-                pins.get(i).setState(PinState.HIGH);
+        setAllOutputsToHigh();
+
+        if (decimalValue >= 0 && decimalValue <= 9 && decimalValue != 7) {
+            Pin selectedOutput = pins.get(decimalValue + 1);
+            if (selectedOutput != null) {
+                selectedOutput.setState(PinState.LOW);
+            } else {
+                throw new IllegalStateException("Pin " + (decimalValue + 1) + " not found");
             }
-        }
-
-        if (decimalValue >= 0 && decimalValue <= 9) {
-            pins.get(decimalValue + 1).setState(PinState.LOW); // Y0-Y9
         }
     }
 
     private void setAllOutputsToUnknown() {
         for (int i = 1; i <= 11; i++) {
             if (i != 8) { // Pomijamy pin 8
-                pins.get(i).setState(PinState.UNKNOWN);
+                Pin pin = pins.get(i);
+                if (pin != null) {
+                    pin.setState(PinState.UNKNOWN);
+                }
+            }
+        }
+    }
+
+    private void setAllOutputsToHigh() {
+        for (int i = 1; i <= 11; i++) {
+            if (i != 8) { // Pomijamy pin 8
+                Pin pin = pins.get(i);
+                if (pin != null) {
+                    pin.setState(PinState.HIGH);
+                }
             }
         }
     }

@@ -27,21 +27,17 @@ public class Component74138 extends Component {
         Pin B = pins.get(2);
         Pin C = pins.get(3);
 
-        // Sprawdzanie aktywacji dekodera - jeśli G1 jest LOW lub G2A, G2B są HIGH, wyjścia są ustawione na HIGH
         if (G1.getState() == PinState.LOW || G2A.getState() == PinState.HIGH || G2B.getState() == PinState.HIGH) {
             setAllOutputsToHigh();
             return;
         }
 
-        // Obliczenie indeksu wyjścia na podstawie stanów A, B i C
         int index = (booleanToInt(C.getState()) << 2) | (booleanToInt(B.getState()) << 1) | booleanToInt(A.getState());
 
-        // Ustawienie wybranego wyjścia na LOW, pozostałe na HIGH
         setAllOutputsToHigh();
         setOutputLow(index);
     }
 
-    // Metoda do ustawiania wszystkich wyjść na HIGH (z wyjątkiem pinu 8)
     private void setAllOutputsToHigh() {
         for (int i = 15; i >= 7; i--) {
             if (i != 8) { // Pin 8 jest pomijany
@@ -50,7 +46,6 @@ public class Component74138 extends Component {
         }
     }
 
-    // Metoda do ustawiania wybranego wyjścia na LOW
     private void setOutputLow(int index) {
         int outputPin = 15 - index;  // Mapowanie indeksu na numer pinu wyjścia
         if (outputPin != 8) { // Pin 8 jest pomijany
@@ -58,7 +53,6 @@ public class Component74138 extends Component {
         }
     }
 
-    // Konwersja stanu pinu na wartość 0/1
     private int booleanToInt(PinState state) {
         return state == PinState.HIGH ? 1 : 0;
     }

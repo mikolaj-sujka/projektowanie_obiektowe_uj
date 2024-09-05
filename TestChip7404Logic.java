@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import java.util.*;
 
+import static org.junit.Assert.assertTrue;
+
 public class TestChip7404Logic {
 
     @Test
@@ -94,6 +96,53 @@ public class TestChip7404Logic {
 
         // Sprawdzamy, czy stan Y1 z chip1 został poprawnie przekazany na A1 w chip2, czyli Y1 na chip2
         Assert.assertEquals(PinState.HIGH, getStateForPin(results, outputStrip2, 1));  // A1 chip2 -> Y1 chip2
+    }
+
+    @Test
+    public void testSimulationWith7404Chip() throws Exception {
+        Simulation simulation = new Simulation();
+
+        // Tworzenie input i output pin headerów
+        int inputStrip = simulation.createInputPinHeader(6);  // Input header z 6 pinami
+        int chip = simulation.createChip(7404);               // Tworzymy chip 7404 (NOT gate)
+        int outputStrip = simulation.createOutputPinHeader(6); // Output header z 6 pinami
+
+        // Łączenie wejść inputStrip z odpowiednimi wejściami chipa 7404
+        simulation.connect(inputStrip, 1, chip, 1);  // Łączymy pin 1 z inputStrip z pinem 1 chipa
+        simulation.connect(inputStrip, 2, chip, 3);  // Łączymy pin 2 z inputStrip z pinem 3 chipa
+        simulation.connect(inputStrip, 3, chip, 5);  // Łączymy pin 3 z inputStrip z pinem 5 chipa
+        simulation.connect(inputStrip, 4, chip, 9);  // Łączymy pin 4 z inputStrip z pinem 9 chipa
+        simulation.connect(inputStrip, 5, chip, 11); // Łączymy pin 5 z inputStrip z pinem 11 chipa
+        simulation.connect(inputStrip, 6, chip, 13); // Łączymy pin 6 z inputStrip z pinem 13 chipa
+
+        // Łączenie wyjść chipa z outputStrip
+        simulation.connect(outputStrip, 1, chip, 2);  // Łączymy pin 2 chipa z pinem 1 outputStrip
+        simulation.connect(outputStrip, 2, chip, 4);  // Łączymy pin 4 chipa z pinem 2 outputStrip
+        simulation.connect(outputStrip, 3, chip, 6);  // Łączymy pin 6 chipa z pinem 3 outputStrip
+        simulation.connect(outputStrip, 4, chip, 8);  // Łączymy pin 8 chipa z pinem 4 outputStrip
+        simulation.connect(outputStrip, 5, chip, 10); // Łączymy pin 10 chipa z pinem 5 outputStrip
+        simulation.connect(outputStrip, 6, chip, 12); // Łączymy pin 12 chipa z pinem 6 outputStrip
+
+        // Tworzenie stanu początkowego dla wejść (Ustawiamy piny w stanie HIGH lub LOW)
+        Set<ComponentPinState> initialStates = new HashSet<>();
+        initialStates.add(new ComponentPinState(inputStrip, 1, PinState.HIGH));  // Pin 1 HIGH
+        initialStates.add(new ComponentPinState(inputStrip, 2, PinState.LOW));   // Pin 2 LOW
+        initialStates.add(new ComponentPinState(inputStrip, 3, PinState.HIGH));  // Pin 3 HIGH
+        initialStates.add(new ComponentPinState(inputStrip, 4, PinState.LOW));   // Pin 4 LOW
+        initialStates.add(new ComponentPinState(inputStrip, 5, PinState.HIGH));  // Pin 5 HIGH
+        initialStates.add(new ComponentPinState(inputStrip, 6, PinState.LOW));   // Pin 6 LOW
+
+        // Uruchomienie symulacji na 1 tick
+        Map<Integer, Set<ComponentPinState>> simulationResult = simulation.simulation(initialStates, 1);
+
+        // Sprawdzenie stanu wyjść
+        Set<ComponentPinState> tick1States = simulationResult.get(1);
+        assertTrue(tick1States.contains(new ComponentPinState(outputStrip, 1, PinState.LOW)));   // NOT gate reverses HIGH to LOW
+        assertTrue(tick1States.contains(new ComponentPinState(outputStrip, 2, PinState.HIGH)));  // NOT gate reverses LOW to HIGH
+        assertTrue(tick1States.contains(new ComponentPinState(outputStrip, 3, PinState.LOW)));   // NOT gate reverses HIGH to LOW
+        assertTrue(tick1States.contains(new ComponentPinState(outputStrip, 4, PinState.HIGH)));  // NOT gate reverses LOW to HIGH
+        assertTrue(tick1States.contains(new ComponentPinState(outputStrip, 5, PinState.LOW)));   // NOT gate reverses HIGH to LOW
+        assertTrue(tick1States.contains(new ComponentPinState(outputStrip, 6, PinState.HIGH)));  // NOT gate reverses LOW to HIGH
     }
 
     // Funkcja pomocnicza do pobierania stanu pinu z wyników symulacji
